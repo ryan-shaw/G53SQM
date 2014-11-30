@@ -47,18 +47,19 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-  	<target name="unit-test-1" >
+  	<target name="test" >
+  		<mkdir dir="${reports.tests}"/>
   	  	<junit printsummary="yes" haltonfailure="yes">
 	  	    <classpath>
 	  	      	<pathelement location="${project.class.path}"/>
 	  	      	<pathelement location="${build.tests}"/>
 	  	      	<pathelement path="${java.class.path}"/>
 	  	    </classpath>
-	  	    <test name="vc.min.chat.Server.test.ServerTest"
-	  	             haltonfailure="yes" outfile="result">
-	  	      	<formatter type="plain"/>
-	  	      	<formatter type="xml"/>
-  	    	</test>
+  	  		<batchtest fork="yes" todir="${reports.tests}">
+  	  	        <fileset dir="${src.test}">
+  	  	          <include name="**/*Test*.java"/>
+  	  	        </fileset>
+  	  	      </batchtest>
   	 	</junit>
   	</target>
 </project>
