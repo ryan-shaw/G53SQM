@@ -8,6 +8,7 @@ import java.net.Socket;
 import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
+import vc.min.chat.Shared.Packets.Packet127Disconnect;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 public class ClientSocket{
@@ -61,6 +62,9 @@ public class ClientSocket{
 		packetHandler = new PacketHandler(dis, dos);
 	}
 
+	/**
+	 * Start the packet reader thread
+	 */
 	private void initReader(){
 		try {
 			dis = new DataInputStream(this.socket.getInputStream());
@@ -71,6 +75,9 @@ public class ClientSocket{
 		}
 	}
 	
+	/**
+	 * Start the packet sender thread
+	 */
 	private void initSender(){
 		try {
 			dos = new DataOutputStream(this.socket.getOutputStream());
@@ -85,7 +92,14 @@ public class ClientSocket{
 		st.queuePacket(packet);
 	}
 	
-	public void close(){
+	public void close(String message){
+		Packet127Disconnect packet = new Packet127Disconnect(message);
+		sendPacket(packet);
+		try {
+			Thread.sleep(100); // Wait for packet to be sent
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		running = false;
 	}
 	

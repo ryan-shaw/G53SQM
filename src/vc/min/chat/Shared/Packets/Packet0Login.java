@@ -4,15 +4,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Login0Packet extends Packet {
+public class Packet0Login extends Packet {
 
 	public String username;
 	
-	public Login0Packet(){
+	public Packet0Login(){
 		
 	}
 	
-	public Login0Packet(String username){
+	public Packet0Login(String username){
 		this.username = username;
 	}
 	

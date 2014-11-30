@@ -12,7 +12,8 @@ public class PacketHandler {
 	public static final Map<Integer, Class> packets;
 	static{
 		Map<Integer, Class> packets1 = new HashMap<Integer, Class>();
-		packets1.put(0, Login0Packet.class);
+		packets1.put(0, Packet0Login.class);
+		packets1.put(127, Packet127Disconnect.class);
 		packets = Collections.unmodifiableMap(packets1);
 	}
 	
@@ -40,6 +41,7 @@ public class PacketHandler {
 			System.err.println("Unknown error on packet receive");
 			e.printStackTrace();
 		} catch(NullPointerException e){
+			e.printStackTrace();
 			System.err.println("Received malformed packet!");
 		}
 		return null;

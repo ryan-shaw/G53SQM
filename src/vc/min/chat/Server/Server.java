@@ -5,9 +5,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Map;
 
-import vc.min.chat.Shared.Packets.Login0Packet;
+import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet;
 
 /**
@@ -48,6 +49,8 @@ public class Server implements Runnable{
 	 */
 	private ArrayList<ClientSocket> clientSockets;
 	
+	private boolean shuttingDown;
+	
 	/**
 	 * Convenience constructor
 	 * 
@@ -67,8 +70,9 @@ public class Server implements Runnable{
 	 */
 	public void stopServer() throws IOException{
 		running = false;
+		shuttingDown = true;
 		for(ClientSocket client : clientSockets){
-			client.close();
+			client.close("server stopping");
 		}
 		serverSocket.close();
 	}
@@ -81,6 +85,20 @@ public class Server implements Runnable{
 		return serverSocket.getLocalPort();
 	}
 
+	/**
+	 * Remove dead sockets
+	 */
+	private void removeDead(){
+		
+		ListIterator<ClientSocket> li = clientSockets.listIterator();
+		
+		while(li.hasNext()){
+			ClientSocket client = li.next();
+			if(!client.isRunning())
+				clientSockets.remove(client);
+		}
+	}
+	
 	@Override
 	public void run() {
 		try {
@@ -92,12 +110,13 @@ public class Server implements Runnable{
 		while(running){
 			try {
 				Socket clientSocket = serverSocket.accept();
+				removeDead();
 				ClientSocket clientThread = new ClientSocket(clientSocket, this);
 				clientSockets.add(clientThread);
 				System.out.println("Added client");
 			} catch (IOException e) {
-				e.printStackTrace();
-				System.err.println("Failed to accept client: " + e.getMessage());
+				if(!shuttingDown)
+					System.err.println("Failed to accept client: " + e.getMessage());
 			}
 			try {
 				Thread.sleep(50);

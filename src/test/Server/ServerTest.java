@@ -8,22 +8,22 @@ import java.io.IOException;
 import java.net.Socket;
 
 import vc.min.chat.Server.Server;
-import vc.min.chat.Shared.Packets.Login0Packet;
+import vc.min.chat.Shared.Packets.Packet0Login;
+import vc.min.chat.Shared.Packets.Packet127Disconnect;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-
 public class ServerTest {
-	private Server server;
-	private Socket client;
-	private DataOutputStream dos;
-	private DataInputStream dis;
-	private PacketHandler p;
-	@Before
-	public void setUp(){
+	private static Server server;
+	private static Socket client;
+	private static DataOutputStream dos;
+	private static DataInputStream dis;
+	private static PacketHandler p;
+	@BeforeClass
+	public static void setUp(){
 		server = new Server(0, 2);
 		new Thread(server).start();
 		
@@ -44,6 +44,20 @@ public class ServerTest {
 		
 	}
 	
+	@AfterClass
+	public static void tearDown(){
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			server.stopServer();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Test
 	public void testLogin() {
 		try {
@@ -52,7 +66,7 @@ public class ServerTest {
 			e1.printStackTrace();
 		}
 		
-		Login0Packet packet = new Login0Packet("test");
+		Packet0Login packet = new Packet0Login("test");
 		try {
 			p.writePacket(packet);
 		} catch (IOException e1) {
@@ -69,20 +83,27 @@ public class ServerTest {
 			assertEquals(b, 0);
 			assertEquals(dis.readUTF(), "test");
 		} catch (IOException e) {
-			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		
+		return;
+	}
+	
+	@Test
+	public void testDisconnect(){
+		Packet127Disconnect packet255disconnect = new Packet127Disconnect("test dc");
+		try {
+			p.writePacket(packet255disconnect);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		try {
+			byte b = dis.readByte();
+			assertEquals(b, 127);
+			assertEquals(dis.readUTF(), "test dc");
+		} catch (IOException e) {
 			fail(e.getMessage());
 		}
 		return;
 	}
-	
-	
-	@After
-	public void tearDown(){
-		try {
-			server.stopServer();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 }
