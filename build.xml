@@ -5,11 +5,14 @@
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="Java chat server and client">
     <property environment="env"/>
+    <property name="junit.output.dir" value="junit"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
-  	<property name="junit" location="lib/junit.jar"/>
-    <property name="src.test" value="src/test"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="K:/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="K:/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
     <path id="Java chat server and client.classpath">
         <pathelement location="bin"/>
         <path refid="JUnit 4.libraryclasspath"/>
@@ -18,6 +21,7 @@
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
+                <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
@@ -49,20 +53,33 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-  	<target name="test" >
-  		<mkdir dir="reports"/>
-  	  	<junit printsummary="yes" haltonfailure="yes">
-	  	    <classpath>
-	  	      	<pathelement location="${project.class.path}"/>
-	  	      	<pathelement location="${build.tests}"/>
-	  	      	<pathelement path="${java.class.path}"/>
-	  	    	<pathelement location="${junit}" />
-	  	    </classpath>
-  	  		<batchtest fork="yes" todir="reports">
-  	  	        <fileset dir="${src.test}">
-  	  	          <include name="**/*Test*.java"/>
-  	  	        </fileset>
-  	  	      </batchtest>
-  	 	</junit>
-  	</target>
+    <target name="Java chat server and client">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
+            <classpath refid="Java chat server and client.classpath"/>
+        </junit>
+    </target>
+    <target name="Server">
+        <java classname="vc.min.chat.Server.Server" failonerror="true" fork="yes">
+            <classpath refid="Java chat server and client.classpath"/>
+        </java>
+    </target>
+    <target name="ServerTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
+            <classpath refid="Java chat server and client.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
 </project>

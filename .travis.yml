@@ -3,3 +3,5 @@ jdk: openjdk7
 branches: 
     only: 
         - master
+script:
+    - ant ServerTest
