@@ -15,6 +15,7 @@
     </path>
     <path id="Java chat server and client.classpath">
         <pathelement location="bin"/>
+    	<pathelement location="lib\junit.jar"/>
         <path refid="JUnit 4.libraryclasspath"/>
     </path>
     <target name="init">
