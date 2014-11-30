@@ -70,7 +70,7 @@
     <target name="ServerTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
+            <formatter type="plain" usefile="false" />
             <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
             <classpath refid="Java chat server and client.classpath"/>
         </junit>
