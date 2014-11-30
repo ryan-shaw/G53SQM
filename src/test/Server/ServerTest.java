@@ -48,13 +48,13 @@ public class ServerTest {
 	
 	@After
 	public void tearDown() throws InterruptedException{
-		Thread.sleep(200);
+		Thread.sleep(100);
 		try {
 			server.stopServer();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Thread.sleep(200);
+		Thread.sleep(500);
 	}
 	
 	@Test
