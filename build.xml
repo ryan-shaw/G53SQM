@@ -18,6 +18,10 @@
         <path refid="JUnit 4.libraryclasspath"/>
         <pathelement location="lib/junit.jar"/>
     </path>
+    <path id="run.ServerTest.classpath">
+        <pathelement location="bin"/>
+        <path refid="Java chat server and client.classpath"/>
+    </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
@@ -54,14 +58,6 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="Java chat server and client">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
-            <classpath refid="Java chat server and client.classpath"/>
-        </junit>
-    </target>
     <target name="Server">
         <java classname="vc.min.chat.Server.Server" failonerror="true" fork="yes">
             <classpath refid="Java chat server and client.classpath"/>
@@ -72,7 +68,7 @@
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="plain" usefile="false" />
             <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
-            <classpath refid="Java chat server and client.classpath"/>
+            <classpath refid="run.ServerTest.classpath"/>
         </junit>
     </target>
     <target name="junitreport">
