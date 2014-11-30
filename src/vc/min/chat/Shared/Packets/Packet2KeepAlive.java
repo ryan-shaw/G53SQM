@@ -4,26 +4,19 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Packet127Disconnect extends Packet {
-
-	public String message;
+public class Packet2KeepAlive extends Packet {
 	
-	public Packet127Disconnect(){
+	public Packet2KeepAlive(){
 		
-	}
-	
-	public Packet127Disconnect(String message){
-		this.message = message;
 	}
 	
 	@Override
 	public void write(DataOutputStream dos) throws IOException {
-		dos.writeUTF(message);
+
 	}
 
 	@Override
 	public Packet read(DataInputStream dis) throws IOException {
-		message = dis.readUTF();
 		return this;
 	}
 

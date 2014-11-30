@@ -62,6 +62,7 @@ public class Server implements Runnable{
 		this.maxConnections = maxConnections;
 		this.running = true;
 		clientSockets = new ArrayList<ClientSocket>();
+		new PingChecker(this).start();
 	}
 
 	/**
@@ -75,6 +76,13 @@ public class Server implements Runnable{
 			client.close("server stopping");
 		}
 		serverSocket.close();
+	}
+	
+	/**
+	 * Get client sockets
+	 */
+	public ArrayList<ClientSocket> getClients(){
+		return clientSockets;
 	}
 	
 	/**

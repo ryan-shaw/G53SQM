@@ -8,7 +8,7 @@ import java.net.Socket;
 import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
-import vc.min.chat.Shared.Packets.Packet127Disconnect;
+import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 public class ClientSocket{
@@ -42,12 +42,23 @@ public class ClientSocket{
 	 * Main server instance
 	 */
 	public Server server;
-
+	
+	/**
+	 * Input stream
+	 */
 	private DataInputStream dis;
 
+	/**
+	 * Output stream
+	 */
 	private DataOutputStream dos;
 
+	/**
+	 * Packet handler
+	 */
 	private PacketHandler packetHandler;
+	
+	public Long lastTimeRead;
 	
 	/**
 	 * Constructor to create the client
@@ -57,6 +68,7 @@ public class ClientSocket{
 		this.socket = socket;
 		this.server = server;
 		running = true;
+		lastTimeRead = System.currentTimeMillis();
 		initReader();
 		initSender();
 		packetHandler = new PacketHandler(dis, dos);
@@ -88,12 +100,20 @@ public class ClientSocket{
 		}
 	}
 	
+	/**
+	 * Add a packet to the send queue
+	 * @param packet
+	 */
 	public void sendPacket(Packet packet){
 		st.queuePacket(packet);
 	}
 	
+	/** 
+	 * Close the client connection
+	 * @param message
+	 */
 	public void close(String message){
-		Packet127Disconnect packet = new Packet127Disconnect(message);
+		Packet1Disconnect packet = new Packet1Disconnect(message);
 		sendPacket(packet);
 		try {
 			Thread.sleep(100); // Wait for packet to be sent
@@ -103,7 +123,7 @@ public class ClientSocket{
 		running = false;
 	}
 	
-	// Getters and setters
+	// Getters and setters, self explanatory
 	
 	public PacketHandler getPacketHandler(){
 		return packetHandler;

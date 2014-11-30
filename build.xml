@@ -63,10 +63,10 @@
             <classpath refid="Java chat server and client.classpath"/>
         </java>
     </target>
-    <target name="ServerTest">
+    <target name="ServerTest" depends="build">
         <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
+        <junit fork="yes" haltonfailure="true">
+            <formatter type="brief" usefile="false"/>
             <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
             <classpath refid="run.ServerTest.classpath"/>
         </junit>
