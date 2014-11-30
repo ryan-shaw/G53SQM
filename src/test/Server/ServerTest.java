@@ -43,6 +43,11 @@ public class ServerTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+		try{
+			Thread.sleep(200);
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}
 		
 	}
 	
