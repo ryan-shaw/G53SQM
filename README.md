@@ -1,5 +1,6 @@
 # Java chat server and client
 ---
+[![Build Status](https://travis-ci.org/ryanshawty/G53SQM.svg?branch=master)](https://travis-ci.org/ryanshawty/G53SQM)
 
 ## Prerequisites
 
