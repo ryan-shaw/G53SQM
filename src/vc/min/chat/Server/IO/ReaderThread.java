@@ -20,11 +20,6 @@ public class ReaderThread extends Thread {
 	 */
 	private DataInputStream dis;
 	
-	/**
-	 * The packet handler
-	 */
-	private PacketHandler packetHandler;
-	
 	/** 
 	 * Reader thread constructor
 	 * 
@@ -34,7 +29,6 @@ public class ReaderThread extends Thread {
 	public ReaderThread(ClientSocket clientSocket){
 		this.clientSocket = clientSocket;
 		this.dis = clientSocket.getInputStream();
-		this.packetHandler = new PacketHandler(dis, clientSocket.getOutputStream());
 	}
 	
 	@Override
@@ -61,7 +55,7 @@ public class ReaderThread extends Thread {
 	}
 
 	private void handlePacket(byte packetID) {
-		Packet packet = this.packetHandler.readPacket(packetID);
+		Packet packet = this.clientSocket.getPacketHandler().readPacket(packetID);
 		if(packet == null){
 			clientSocket.setRunning(false);
 			return;// Disconnect

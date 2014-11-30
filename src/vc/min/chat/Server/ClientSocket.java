@@ -8,6 +8,7 @@ import java.net.Socket;
 import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
+import vc.min.chat.Shared.Packets.PacketHandler;
 
 public class ClientSocket{
 	
@@ -44,6 +45,8 @@ public class ClientSocket{
 	private DataInputStream dis;
 
 	private DataOutputStream dos;
+
+	private PacketHandler packetHandler;
 	
 	/**
 	 * Constructor to create the client
@@ -55,6 +58,7 @@ public class ClientSocket{
 		running = true;
 		initReader();
 		initSender();
+		packetHandler = new PacketHandler(dis, dos);
 	}
 
 	private void initReader(){
@@ -81,7 +85,15 @@ public class ClientSocket{
 		st.queuePacket(packet);
 	}
 	
+	public void close(){
+		running = false;
+	}
+	
 	// Getters and setters
+	
+	public PacketHandler getPacketHandler(){
+		return packetHandler;
+	}
 	
 	public DataOutputStream getOutputStream(){
 		return dos;

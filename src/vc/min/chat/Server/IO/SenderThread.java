@@ -42,7 +42,7 @@ public class SenderThread extends Thread {
 			if(packets.size() > 0){
 				Packet packet = packets.remove(0);
 				try {
-					packet.write(dos);
+					clientSocket.getPacketHandler().writePacket(packet);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

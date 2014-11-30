@@ -67,6 +67,9 @@ public class Server implements Runnable{
 	 */
 	public void stopServer() throws IOException{
 		running = false;
+		for(ClientSocket client : clientSockets){
+			client.close();
+		}
 		serverSocket.close();
 	}
 	

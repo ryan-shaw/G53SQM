@@ -58,7 +58,11 @@ public class ServerTest {
 		} catch (IOException e1) {
 			fail(e1.getMessage());
 		}
-		
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		// Expect a confirmation
 		try {
 			byte b = dis.readByte();
@@ -68,7 +72,7 @@ public class ServerTest {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
-		
+		return;
 	}
 	
 	

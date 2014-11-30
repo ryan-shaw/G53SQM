@@ -9,13 +9,17 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="K:/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="K:/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
     <path id="Java chat server and client.classpath">
         <pathelement location="bin"/>
-        <pathelement location="lib/junit.jar"/>
-        <pathelement location="lib/hamcrest.jar"/>
+        <path refid="JUnit 4.libraryclasspath"/>
     </path>
     <path id="run.ServerTest.classpath">
-        <pathelement location="bin"/>
+        <pathelement location="lib/junit.jar"/>
+        <pathelement location="lib/hamcrest.jar"/>
         <path refid="Java chat server and client.classpath"/>
     </path>
     <target name="init">
@@ -62,7 +66,7 @@
     <target name="ServerTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="plain" usefile="false" />
+            <formatter type="xml"/>
             <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
             <classpath refid="run.ServerTest.classpath"/>
         </junit>
