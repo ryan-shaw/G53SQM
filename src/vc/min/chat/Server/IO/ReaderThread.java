@@ -6,7 +6,8 @@ import java.io.IOException;
 import vc.min.chat.Server.ClientSocket;
 import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet;
-import vc.min.chat.Shared.Packets.Packet127Disconnect;
+import vc.min.chat.Shared.Packets.Packet1Disconnect;
+import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 public class ReaderThread extends Thread {
@@ -66,9 +67,14 @@ public class ReaderThread extends Thread {
 			Packet0Login packet0login = (Packet0Login) packet;
 			clientSocket.sendPacket(packet0login);
 		break;
-		case 127:
+		case 2:
+			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
+			clientSocket.sendPacket(packet2keepalive);
+			clientSocket.lastTimeRead = System.currentTimeMillis();
+			
+		case 1:
 			System.out.println("Closing client");
-			Packet127Disconnect packet255disconnect = (Packet127Disconnect) packet;
+			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
 			clientSocket.close(packet255disconnect.message);
 		}
 	}

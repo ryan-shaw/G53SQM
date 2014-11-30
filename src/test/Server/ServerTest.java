@@ -9,10 +9,12 @@ import java.net.Socket;
 
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
-import vc.min.chat.Shared.Packets.Packet127Disconnect;
+import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,8 +24,8 @@ public class ServerTest {
 	private static DataOutputStream dos;
 	private static DataInputStream dis;
 	private static PacketHandler p;
-	@BeforeClass
-	public static void setUp(){
+	@Before
+	public void setUp(){
 		server = new Server(0, 2);
 		new Thread(server).start();
 		
@@ -44,18 +46,15 @@ public class ServerTest {
 		
 	}
 	
-	@AfterClass
-	public static void tearDown(){
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+	@After
+	public void tearDown() throws InterruptedException{
+		Thread.sleep(200);
 		try {
 			server.stopServer();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		Thread.sleep(200);
 	}
 	
 	@Test
@@ -91,7 +90,7 @@ public class ServerTest {
 	
 	@Test
 	public void testDisconnect(){
-		Packet127Disconnect packet255disconnect = new Packet127Disconnect("test dc");
+		Packet1Disconnect packet255disconnect = new Packet1Disconnect("test dc");
 		try {
 			p.writePacket(packet255disconnect);
 		} catch (IOException e) {
@@ -99,11 +98,25 @@ public class ServerTest {
 		}
 		try {
 			byte b = dis.readByte();
-			assertEquals(b, 127);
+			assertEquals(b, 1);
 			assertEquals(dis.readUTF(), "test dc");
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
 		return;
+	}
+	
+	@Test
+	public void testKeepAlive(){
+		try {
+			Thread.sleep(1002);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			byte b = dis.readByte();
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 	}
 }
