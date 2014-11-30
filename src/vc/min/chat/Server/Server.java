@@ -46,6 +46,10 @@ public class Server implements Runnable{
 		running = false;
 		serverSocket.close();
 	}
+	
+	public int getPort() {
+		return serverSocket.getLocalPort();
+	}
 
 	@Override
 	public void run() {

@@ -19,14 +19,20 @@ public class ServerTest {
 	
 	@Before
 	public void setUp(){
-		server = new Server(4444, 2);
+		server = new Server(0, 2);
 		new Thread(server).start();
 	}
 	
 	@Test
 	public void testConnection() {
 		try {
-			client = new Socket("localhost", 4444);
+			Thread.sleep(500);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			client = new Socket("localhost", server.getPort());
+			client.close();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
