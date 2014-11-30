@@ -8,6 +8,7 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
+  	<property name="junit" location="lib/junit.jar"/>
     <path id="Java chat server and client.classpath">
         <pathelement location="bin"/>
         <path refid="JUnit 4.libraryclasspath"/>
@@ -48,14 +49,15 @@
         <antcall target="build"/>
     </target>
   	<target name="test" >
-  		<mkdir dir="${reports.tests}"/>
+  		<mkdir dir="reports"/>
   	  	<junit printsummary="yes" haltonfailure="yes">
 	  	    <classpath>
 	  	      	<pathelement location="${project.class.path}"/>
 	  	      	<pathelement location="${build.tests}"/>
 	  	      	<pathelement path="${java.class.path}"/>
+	  	    	<pathelement location="${junit}" />
 	  	    </classpath>
-  	  		<batchtest fork="yes" todir="${reports.tests}">
+  	  		<batchtest fork="yes" todir="reports">
   	  	        <fileset dir="${src.test}">
   	  	          <include name="**/*Test*.java"/>
   	  	        </fileset>
