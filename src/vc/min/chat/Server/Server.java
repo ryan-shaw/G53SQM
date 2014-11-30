@@ -3,6 +3,12 @@ package vc.min.chat.Server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import vc.min.chat.Shared.Packets.Login0Packet;
+import vc.min.chat.Shared.Packets.Packet;
 
 /**
  * Simple chat server based on the protocol listed in README.md
@@ -12,7 +18,14 @@ import java.net.Socket;
  */
 
 public class Server implements Runnable{
+	
+	public static void main(String[] args){
+		new Thread(new Server(0, 4)).start();
+	}
 		
+	/**
+	 * Thread running field
+	 */
 	private boolean running;
 	
 	/**
@@ -31,6 +44,11 @@ public class Server implements Runnable{
 	private ServerSocket serverSocket;
 	
 	/**
+	 * Holds the client sockets
+	 */
+	private ArrayList<ClientSocket> clientSockets;
+	
+	/**
 	 * Convenience constructor
 	 * 
 	 * @param port
@@ -39,14 +57,23 @@ public class Server implements Runnable{
 	public Server(int port, int maxConnections){
 		this.port = port;
 		this.maxConnections = maxConnections;
-		this.running = false;
+		this.running = true;
+		clientSockets = new ArrayList<ClientSocket>();
 	}
-	
+
+	/**
+	 * Stops the server
+	 * @throws IOException
+	 */
 	public void stopServer() throws IOException{
 		running = false;
 		serverSocket.close();
 	}
 	
+	/**
+	 * Get the port the server is running on
+	 * @return port
+	 */
 	public int getPort() {
 		return serverSocket.getLocalPort();
 	}
@@ -62,8 +89,17 @@ public class Server implements Runnable{
 		while(running){
 			try {
 				Socket clientSocket = serverSocket.accept();
+				ClientSocket clientThread = new ClientSocket(clientSocket, this);
+				clientSockets.add(clientThread);
+				System.out.println("Added client");
 			} catch (IOException e) {
+				e.printStackTrace();
 				System.err.println("Failed to accept client: " + e.getMessage());
+			}
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}

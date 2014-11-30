@@ -1,0 +1,109 @@
+package vc.min.chat.Server;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
+import vc.min.chat.Server.IO.ReaderThread;
+import vc.min.chat.Server.IO.SenderThread;
+import vc.min.chat.Shared.Packets.Packet;
+
+public class ClientSocket{
+	
+	/**
+	 * Clients user name
+	 */
+	private String username;
+	
+	/**
+	 * The client socket
+	 */
+	private Socket socket;
+
+	/**
+	 * Socket is running
+	 */
+	private boolean running;
+	
+	/**
+	 * Input thread
+	 */
+	private ReaderThread rt;
+	
+	/**
+	 * Output thread
+	 */
+	private SenderThread st;
+	
+	/**
+	 * Main server instance
+	 */
+	public Server server;
+
+	private DataInputStream dis;
+
+	private DataOutputStream dos;
+	
+	/**
+	 * Constructor to create the client
+	 * @param socket
+	 */
+	public ClientSocket(Socket socket, Server server){
+		this.socket = socket;
+		this.server = server;
+		running = true;
+		initReader();
+		initSender();
+	}
+
+	private void initReader(){
+		try {
+			dis = new DataInputStream(this.socket.getInputStream());
+			rt = new ReaderThread(this);
+			rt.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void initSender(){
+		try {
+			dos = new DataOutputStream(this.socket.getOutputStream());
+			st = new SenderThread(this);
+			st.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendPacket(Packet packet){
+		st.queuePacket(packet);
+	}
+	
+	// Getters and setters
+	
+	public DataOutputStream getOutputStream(){
+		return dos;
+	}
+	
+	public DataInputStream getInputStream(){
+		return dis;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
+
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
+}
