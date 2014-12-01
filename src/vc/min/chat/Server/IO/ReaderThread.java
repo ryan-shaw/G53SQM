@@ -59,32 +59,26 @@ public class ReaderThread extends Thread {
 	private void handlePacket(byte packetID) {
 		Packet packet = this.clientSocket.getPacketHandler().readPacket(packetID);
 		if(packet == null){
-			clientSocket.setRunning(false);
+			Packet1Disconnect packet255disconnect = new Packet1Disconnect("malformed packet received");
+			clientSocket.sendPacket(packet255disconnect);
 			return;// Disconnect
 		}
 		switch(packetID){
 		case 0:
 			Packet0Login packet0login = (Packet0Login) packet;
 			System.out.println(packet0login.username + " has joined");
+			clientSocket.setUsername(packet0login.username);
 			clientSocket.sendPacket(packet0login);
 		break;
 		case 2:
 			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
 			clientSocket.sendPacket(packet2keepalive);
 			clientSocket.lastTimeRead = System.currentTimeMillis();
-			
+		break;
 		case 1:
 			System.out.println("Client disconnecting...");
 			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
 			clientSocket.close(packet255disconnect.message);
-		}
-	}
-
-	public void close(){
-		try {
-			dis.close();
-		} catch (IOException e) {
-			System.err.println("Failed to close: " + e.getMessage());
 		}
 	}
 }

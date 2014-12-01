@@ -40,9 +40,7 @@ public class PacketHandler {
 			return packet;
 		} catch (IOException | InstantiationException | IllegalAccessException e) {
 			System.err.println("Unknown error on packet receive");
-			e.printStackTrace();
 		} catch(NullPointerException e){
-			e.printStackTrace();
 			System.err.println("Received malformed packet!");
 		}
 		return null;
