@@ -7,8 +7,10 @@
 ## Tools used
 ### GitHub
 - Subversion
+
 ### Travis
 - Build and test project
+
 ### Eclipse
 - Junit
 	- For unit testing
