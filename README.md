@@ -3,6 +3,21 @@
 [![Build Status](https://travis-ci.org/ryanshawty/G53SQM.svg?branch=master)](https://travis-ci.org/ryanshawty/G53SQM)
 
 ## Prerequisites
+## OracleJDK8
+Built and tested on oracle JDK 8, do not expect this to work on any other JDK
+
+## Tools used
+### GitHub
+- Subversion
+
+### Travis
+- Build and test project
+
+### Eclipse
+- Junit
+	- For unit testing
+- EclEmma
+	- Test coverage
 
 ## Chat Protocol
 
