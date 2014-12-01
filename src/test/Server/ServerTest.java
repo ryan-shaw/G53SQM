@@ -25,15 +25,11 @@ public class ServerTest {
 	private static DataInputStream dis;
 	private static PacketHandler p;
 	@Before
-	public void setUp(){
+	public void setUp() throws InterruptedException{
 		server = new Server(0, 2);
 		new Thread(server).start();
 		
-		try {
-			Thread.sleep(200); // Wait for server to spin up
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+		Thread.sleep(200); // Wait for server to spin up
 		
 		try {
 			client = new Socket("localhost", server.getPort());
@@ -43,7 +39,7 @@ public class ServerTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		
+		Thread.sleep(200);		
 	}
 	
 	@After
@@ -58,12 +54,8 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testLogin() {
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+	public void testLogin() throws InterruptedException {
+		Thread.sleep(100);
 		
 		Packet0Login packet = new Packet0Login("test");
 		try {
@@ -71,11 +63,7 @@ public class ServerTest {
 		} catch (IOException e1) {
 			fail(e1.getMessage());
 		}
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+		Thread.sleep(100);
 		// Expect a confirmation
 		try {
 			byte b = dis.readByte();
@@ -107,12 +95,8 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testKeepAlive(){
-		try {
-			Thread.sleep(1002);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	public void testKeepAlive() throws InterruptedException{
+		Thread.sleep(1002);
 		try {
 			byte b = dis.readByte();
 		} catch (IOException e) {
