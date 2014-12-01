@@ -51,6 +51,8 @@ public class Server implements Runnable{
 	
 	private boolean shuttingDown;
 	
+	private boolean accepting;
+	
 	/**
 	 * Convenience constructor
 	 * 
@@ -94,6 +96,10 @@ public class Server implements Runnable{
 		return serverSocket.getLocalPort();
 	}
 	
+	public synchronized boolean isAccepting(){
+		return accepting;
+	}
+	
 	/**
 	 * Remove dead sockets
 	 */
@@ -117,6 +123,7 @@ public class Server implements Runnable{
 			return;
 		}
 		while(running){
+			accepting = true;
 			try {
 				Socket clientSocket = serverSocket.accept();
 				removeDead();

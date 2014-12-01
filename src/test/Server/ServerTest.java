@@ -15,7 +15,9 @@ import vc.min.chat.Shared.Packets.PacketHandler;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 public class ServerTest {
 	private static Server server;
@@ -23,12 +25,15 @@ public class ServerTest {
 	private static DataOutputStream dos;
 	private static DataInputStream dis;
 	private static PacketHandler p;
+	
+	@Rule
+	public Timeout globalTimeout = new Timeout(5000);
+	
 	@Before
 	public void setUp() throws InterruptedException{
 		server = new Server(0, 2);
 		new Thread(server).start();
-		
-		Thread.sleep(200); // Wait for server to spin up
+		while(!server.isAccepting()); // Wait for server to accept clients
 		
 		try {
 			client = new Socket("localhost", server.getPort());
@@ -38,7 +43,7 @@ public class ServerTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		Thread.sleep(200);		
+		while(!client.isConnected()); // Wait for connection to be established
 	}
 	
 	@After
@@ -53,14 +58,13 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testMultipleLogins2Sockets() throws InterruptedException, UnknownHostException, IOException{
-		Thread.sleep(200); // Wait for server to spin up
-		
+	public void testMultipleLogins2Sockets() throws InterruptedException, UnknownHostException, IOException{		
 		Socket lclient = new Socket("localhost", server.getPort());
 		DataOutputStream ldos = new DataOutputStream(lclient.getOutputStream());
 		DataInputStream ldis = new DataInputStream(lclient.getInputStream());
 		PacketHandler lp = new PacketHandler(ldis, ldos);
-		Thread.sleep(200);	
+//		Thread.sleep(200); // Wait for client connect
+		while(!lclient.isConnected());
 		
 		Packet0Login packet = new Packet0Login("test");
 		try {
@@ -68,7 +72,6 @@ public class ServerTest {
 		} catch (IOException e1) {
 			fail(e1.getMessage());
 		}
-		Thread.sleep(100);
 		// Expect a confirmation
 		try {
 			byte b = dis.readByte();
@@ -84,7 +87,6 @@ public class ServerTest {
 		} catch (IOException e1) {
 			fail(e1.getMessage());
 		}
-		Thread.sleep(100);
 		// Expect a confirmation
 		try {
 			byte b = ldis.readByte();
@@ -170,8 +172,8 @@ public class ServerTest {
 		}
 		try {
 			byte b = dis.readByte();
-			assertEquals(b, 1);
-			assertEquals(dis.readUTF(), "test dc");
+			assertEquals(1, b);
+			assertEquals("test dc", dis.readUTF());
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
@@ -184,7 +186,7 @@ public class ServerTest {
 		try {
 			// After timeout exceeds 1000 seconds we should receive a disconnect packet
 			byte b = dis.readByte();
-			assertEquals(b, 1);
+			assertEquals(1, b);
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
