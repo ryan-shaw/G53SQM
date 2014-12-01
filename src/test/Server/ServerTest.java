@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
+import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 import org.junit.After;
@@ -184,11 +185,40 @@ public class ServerTest {
 	
 	@Test
 	public void testKeepAlive() throws InterruptedException{
+		Packet2KeepAlive packet2keepalive = new Packet2KeepAlive();
+		try {
+			p.writePacket(packet2keepalive);
+		} catch (IOException e2) {
+			fail(e2.getMessage());
+		}
+		
+		try {
+			byte b = dis.readByte();
+			assertEquals(2, b);
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		
 		Thread.sleep(1200);
 		try {
 			// After timeout exceeds 1000 seconds we should receive a disconnect packet
 			byte b = dis.readByte();
 			assertEquals(1, b);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMalformedPacket() throws InterruptedException{
+		try {
+			dos.writeByte(10);
+		} catch (IOException e) {
+			fail(e.getMessage());
+		} // Packet with byte 10 doesn't exist
+		Thread.sleep(100);
+		try {
+			assertEquals(1, dis.readByte());
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
