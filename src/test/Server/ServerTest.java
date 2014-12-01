@@ -191,7 +191,7 @@ public class ServerTest {
 		} catch (IOException e2) {
 			fail(e2.getMessage());
 		}
-		Thread.sleep(200);
+		Thread.sleep(100);
 		try {
 			byte b = dis.readByte();
 			assertEquals(2, b);
