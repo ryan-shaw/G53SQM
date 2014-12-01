@@ -72,6 +72,7 @@ public class ServerTest {
 		} catch (IOException e1) {
 			fail(e1.getMessage());
 		}
+		Thread.sleep(100);
 		// Expect a confirmation
 		try {
 			byte b = dis.readByte();
@@ -87,6 +88,7 @@ public class ServerTest {
 		} catch (IOException e1) {
 			fail(e1.getMessage());
 		}
+		Thread.sleep(100);
 		// Expect a confirmation
 		try {
 			byte b = ldis.readByte();
