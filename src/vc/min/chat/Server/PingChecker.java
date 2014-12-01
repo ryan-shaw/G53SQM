@@ -1,7 +1,5 @@
 package vc.min.chat.Server;
 
-import java.util.ArrayList;
-
 public class PingChecker extends Thread{
 
 	private Server server;

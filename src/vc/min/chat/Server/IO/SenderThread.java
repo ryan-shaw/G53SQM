@@ -32,24 +32,17 @@ public class SenderThread extends Thread {
 	
 	@Override
 	public void run(){
-		while(clientSocket.isRunning()){
-			if(clientSocket.getPacketQueue().size() > 0){
-				Packet packet = clientSocket.getPacketQueue().remove(0);
-				try {
+		try{
+			while(clientSocket.isRunning()){
+				if(clientSocket.getPacketQueue().size() > 0){
+					Packet packet = clientSocket.getPacketQueue().remove(0);
 					clientSocket.getPacketHandler().writePacket(packet);
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
-			}
-			try {
 				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+
 			}
-		}
-		try {
 			this.dos.close();
-		} catch (IOException e) {
+		}catch(IOException | InterruptedException e){
 			e.printStackTrace();
 		}
 	}
