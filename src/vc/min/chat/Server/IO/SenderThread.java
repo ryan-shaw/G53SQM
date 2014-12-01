@@ -39,7 +39,6 @@ public class SenderThread extends Thread {
 					clientSocket.getPacketHandler().writePacket(packet);
 				}
 				Thread.sleep(50);
-
 			}
 			this.dos.close();
 		}catch(IOException | InterruptedException e){
