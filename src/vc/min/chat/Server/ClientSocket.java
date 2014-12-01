@@ -4,10 +4,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
+import vc.min.chat.Shared.Packets.Packet127Greeting;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
@@ -60,6 +62,8 @@ public class ClientSocket{
 	
 	public Long lastTimeRead;
 	
+	private ArrayList<Packet> packets;
+	
 	/**
 	 * Constructor to create the client
 	 * @param socket
@@ -69,6 +73,8 @@ public class ClientSocket{
 		this.server = server;
 		running = true;
 		lastTimeRead = System.currentTimeMillis();
+		packets = new ArrayList<Packet>();
+		sendPacket(new Packet127Greeting());
 		initReader();
 		initSender();
 		packetHandler = new PacketHandler(dis, dos);
@@ -105,7 +111,7 @@ public class ClientSocket{
 	 * @param packet
 	 */
 	public void sendPacket(Packet packet){
-		st.queuePacket(packet);
+		packets.add(packet);
 	}
 	
 	/** 
@@ -151,5 +157,9 @@ public class ClientSocket{
 
 	public void setRunning(boolean running) {
 		this.running = running;
+	}
+	
+	public ArrayList<Packet> getPacketQueue(){
+		return packets;
 	}
 }

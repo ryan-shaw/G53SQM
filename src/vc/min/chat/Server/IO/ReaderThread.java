@@ -60,11 +60,13 @@ public class ReaderThread extends Thread {
 		clientSocket.lastTimeRead = System.currentTimeMillis();
 		Packet packet = null;
 		try{
+			System.out.println("PacketID: " + packetID);
 			packet = this.clientSocket.getPacketHandler().readPacket(packetID);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		if(packet == null){
+			System.err.println("bad packet");
 			Packet1Disconnect packet255disconnect = new Packet1Disconnect("malformed packet received");
 			clientSocket.sendPacket(packet255disconnect);
 			return;// Disconnect

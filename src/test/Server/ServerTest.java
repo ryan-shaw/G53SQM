@@ -31,7 +31,7 @@ public class ServerTest {
 	public Timeout globalTimeout = new Timeout(5000);
 	
 	@Before
-	public void setUp() throws InterruptedException{
+	public void setUp() throws InterruptedException, IOException{
 		server = new Server(0, 2);
 		new Thread(server).start();
 		while(!server.isAccepting()); // Wait for server to accept clients
@@ -44,7 +44,8 @@ public class ServerTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		while(!client.isConnected()); // Wait for connection to be established
+		byte b = dis.readByte();
+		assertEquals(127, b);
 	}
 	
 	@After
@@ -64,78 +65,43 @@ public class ServerTest {
 		DataOutputStream ldos = new DataOutputStream(lclient.getOutputStream());
 		DataInputStream ldis = new DataInputStream(lclient.getInputStream());
 		PacketHandler lp = new PacketHandler(ldis, ldos);
-//		Thread.sleep(200); // Wait for client connect
-		while(!lclient.isConnected());
+		
+		byte b = ldis.readByte();
+		assertEquals(127, b);
 		
 		Packet0Login packet = new Packet0Login("test");
-		try {
-			p.writePacket(packet);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
-		Thread.sleep(100);
+		p.writePacket(packet);
 		// Expect a confirmation
-		try {
-			byte b = dis.readByte();
-			assertEquals(0, b);
-			assertEquals("test", dis.readUTF());
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
+		b = dis.readByte();
+		assertEquals(0, b);
+		assertEquals("test", dis.readUTF());
 		
 		Packet0Login lpacket = new Packet0Login("test1");
-		try {
-			lp.writePacket(lpacket);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
-		Thread.sleep(100);
+		lp.writePacket(lpacket);
 		// Expect a confirmation
-		try {
-			byte b = ldis.readByte();
-			assertEquals(0, b);
-			assertEquals(ldis.readUTF(), "test1");
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
+		b = ldis.readByte();
+		assertEquals(0, b);
+		assertEquals(ldis.readUTF(), "test1");
 		lclient.close();
 	}
 	
 	@Test
-	public void testMultipleLogins() throws InterruptedException {
+	public void testMultipleLogins() throws InterruptedException, IOException {
 		Thread.sleep(100);
 		
 		Packet0Login packet = new Packet0Login("test");
-		try {
-			p.writePacket(packet);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
-		Thread.sleep(100);
+		p.writePacket(packet);
 		// Expect a confirmation
-		try {
-			byte b = dis.readByte();
-			assertEquals(0, b);
-			assertEquals("test", dis.readUTF());
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		
+		byte b = dis.readByte();
+		assertEquals(0, b);
+		assertEquals("test", dis.readUTF());
+	
 		Packet0Login packet1 = new Packet0Login("test1");
-		try {
-			p.writePacket(packet1);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
-		Thread.sleep(100);
+		p.writePacket(packet1);
 		// Expect a confirmation
-		try {
-			byte b = dis.readByte();
-			assertEquals(0, b);
-			assertEquals("test1", dis.readUTF());
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
+		b = dis.readByte();
+		assertEquals(0, b);
+		assertEquals("test1", dis.readUTF());
 		
 		// Send another login packet should just change the username.
 		
@@ -143,84 +109,45 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testLogin() throws InterruptedException {
-		Thread.sleep(100);
-		
+	public void testLogin() throws InterruptedException, IOException {
 		Packet0Login packet = new Packet0Login("test");
-		try {
-			p.writePacket(packet);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
-		Thread.sleep(100);
+		p.writePacket(packet);
 		// Expect a confirmation
-		try {
-			byte b = dis.readByte();
-			assertEquals(0, b);
-			assertEquals("test", dis.readUTF());
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		
+		byte b = dis.readByte();
+		assertEquals(0, b);
+		assertEquals("test", dis.readUTF());
+	
 		return;
 	}
 	
 	@Test
-	public void testDisconnect(){
+	public void testDisconnect() throws IOException{
 		Packet1Disconnect packet255disconnect = new Packet1Disconnect("test dc");
-		try {
-			p.writePacket(packet255disconnect);
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		try {
-			byte b = dis.readByte();
-			assertEquals(1, b);
-			assertEquals("test dc", dis.readUTF());
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
+		p.writePacket(packet255disconnect);
+		byte b = dis.readByte();
+		assertEquals(1, b);
+		assertEquals("test dc", dis.readUTF());
 		return;
 	}
 	
 	@Test
-	public void testKeepAlive() throws InterruptedException{
+	public void testKeepAlive() throws InterruptedException, IOException{
 		Packet2KeepAlive packet2keepalive = new Packet2KeepAlive();
-		try {
-			p.writePacket(packet2keepalive);
-		} catch (IOException e2) {
-			fail(e2.getMessage());
-		}
+		p.writePacket(packet2keepalive);
 		Thread.sleep(100);
-		try {
-			byte b = dis.readByte();
-			assertEquals(2, b);
-		} catch (IOException e1) {
-			fail(e1.getMessage());
-		}
+		byte b = dis.readByte();
+		assertEquals(2, b);
 		
 		Thread.sleep(1200);
-		try {
-			// After timeout exceeds 1000 seconds we should receive a disconnect packet
-			byte b = dis.readByte();
-			assertEquals(1, b);
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
+		// After timeout exceeds 1000 seconds we should receive a disconnect packet
+		b = dis.readByte();
+		assertEquals(1, b);
 	}
 	
 	@Test
-	public void testMalformedPacket() throws InterruptedException{
-		try {
-			dos.writeByte(10);
-		} catch (IOException e) {
-			fail(e.getMessage());
-		} // Packet with byte 10 doesn't exist
+	public void testMalformedPacket() throws InterruptedException, IOException{
+		dos.writeByte(10);
 		Thread.sleep(100);
-		try {
-			assertEquals(1, dis.readByte());
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
+		assertEquals(1, dis.readByte());
 	}
 }

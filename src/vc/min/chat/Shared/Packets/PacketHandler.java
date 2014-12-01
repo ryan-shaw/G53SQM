@@ -15,6 +15,7 @@ public class PacketHandler {
 		packets1.put(0, Packet0Login.class);
 		packets1.put(1, Packet1Disconnect.class);
 		packets1.put(2, Packet2KeepAlive.class);
+		packets1.put(127, Packet127Greeting.class);
 		packets = Collections.unmodifiableMap(packets1);
 	}
 	
@@ -30,6 +31,7 @@ public class PacketHandler {
 		int packetID = getPacketID(packet.getClass());
 		dos.writeByte(packetID);
 		packet.write(dos);
+		dos.flush();
 	}
 	
 	public Packet readPacket(int packetID){
@@ -39,6 +41,7 @@ public class PacketHandler {
 			packet = packet.read(dis);
 			return packet;
 		} catch (IOException | InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
 			System.err.println("Unknown error on packet receive");
 		} catch(NullPointerException e){
 			System.err.println("Received malformed packet!");
