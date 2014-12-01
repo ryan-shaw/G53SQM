@@ -70,6 +70,7 @@ public class Server implements Runnable{
 	 * @throws IOException
 	 */
 	public void stopServer() throws IOException{
+		System.out.println("Shutting down...");
 		running = false;
 		shuttingDown = true;
 		for(ClientSocket client : clientSockets){
@@ -92,11 +93,11 @@ public class Server implements Runnable{
 	public int getPort() {
 		return serverSocket.getLocalPort();
 	}
-
+	
 	/**
 	 * Remove dead sockets
 	 */
-	private void removeDead(){
+	void removeDead(){
 		
 		ListIterator<ClientSocket> li = clientSockets.listIterator();
 		
@@ -121,7 +122,7 @@ public class Server implements Runnable{
 				removeDead();
 				ClientSocket clientThread = new ClientSocket(clientSocket, this);
 				clientSockets.add(clientThread);
-				System.out.println("Added client");
+				System.out.println("Added client, client count: " + clientSockets.size());
 			} catch (IOException e) {
 				if(!shuttingDown)
 					System.err.println("Failed to accept client: " + e.getMessage());

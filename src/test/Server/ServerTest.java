@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
@@ -52,6 +53,91 @@ public class ServerTest {
 	}
 	
 	@Test
+	public void testMultipleLogins2Sockets() throws InterruptedException, UnknownHostException, IOException{
+		Thread.sleep(200); // Wait for server to spin up
+		
+		Socket lclient = new Socket("localhost", server.getPort());
+		DataOutputStream ldos = new DataOutputStream(lclient.getOutputStream());
+		DataInputStream ldis = new DataInputStream(lclient.getInputStream());
+		PacketHandler lp = new PacketHandler(ldis, ldos);
+		Thread.sleep(200);	
+		
+		Packet0Login packet = new Packet0Login("test");
+		try {
+			p.writePacket(packet);
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		Thread.sleep(100);
+		// Expect a confirmation
+		try {
+			byte b = dis.readByte();
+			assertEquals(0, b);
+			assertEquals("test", dis.readUTF());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		Packet0Login lpacket = new Packet0Login("test1");
+		try {
+			lp.writePacket(lpacket);
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		Thread.sleep(100);
+		// Expect a confirmation
+		try {
+			byte b = ldis.readByte();
+			assertEquals(0, b);
+			assertEquals(ldis.readUTF(), "test1");
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		lclient.close();
+	}
+	
+	@Test
+	public void testMultipleLogins() throws InterruptedException {
+		Thread.sleep(100);
+		
+		Packet0Login packet = new Packet0Login("test");
+		try {
+			p.writePacket(packet);
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		Thread.sleep(100);
+		// Expect a confirmation
+		try {
+			byte b = dis.readByte();
+			assertEquals(0, b);
+			assertEquals("test", dis.readUTF());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		Packet0Login packet1 = new Packet0Login("test1");
+		try {
+			p.writePacket(packet1);
+		} catch (IOException e1) {
+			fail(e1.getMessage());
+		}
+		Thread.sleep(100);
+		// Expect a confirmation
+		try {
+			byte b = dis.readByte();
+			assertEquals(0, b);
+			assertEquals("test1", dis.readUTF());
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		// Send another login packet should just change the username.
+		
+		return;
+	}
+	
+	@Test
 	public void testLogin() throws InterruptedException {
 		Thread.sleep(100);
 		
@@ -65,8 +151,8 @@ public class ServerTest {
 		// Expect a confirmation
 		try {
 			byte b = dis.readByte();
-			assertEquals(b, 0);
-			assertEquals(dis.readUTF(), "test");
+			assertEquals(0, b);
+			assertEquals("test", dis.readUTF());
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
@@ -94,9 +180,11 @@ public class ServerTest {
 	
 	@Test
 	public void testKeepAlive() throws InterruptedException{
-		Thread.sleep(1002);
+		Thread.sleep(1200);
 		try {
+			// After timeout exceeds 1000 seconds we should receive a disconnect packet
 			byte b = dis.readByte();
+			assertEquals(b, 1);
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}

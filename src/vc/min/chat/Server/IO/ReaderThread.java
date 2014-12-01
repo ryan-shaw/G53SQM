@@ -8,7 +8,6 @@ import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
-import vc.min.chat.Shared.Packets.PacketHandler;
 
 public class ReaderThread extends Thread {
 	
@@ -41,7 +40,8 @@ public class ReaderThread extends Thread {
 				packetID = dis.readByte();
 				handlePacket(packetID);
 			} catch (IOException e) {
-				e.printStackTrace();
+				// Stream probably closed
+				clientSocket.setRunning(false);
 			}
 			try {
 				Thread.sleep(50);
@@ -65,6 +65,7 @@ public class ReaderThread extends Thread {
 		switch(packetID){
 		case 0:
 			Packet0Login packet0login = (Packet0Login) packet;
+			System.out.println(packet0login.username + " has joined");
 			clientSocket.sendPacket(packet0login);
 		break;
 		case 2:
@@ -73,7 +74,7 @@ public class ReaderThread extends Thread {
 			clientSocket.lastTimeRead = System.currentTimeMillis();
 			
 		case 1:
-			System.out.println("Closing client");
+			System.out.println("Client disconnecting...");
 			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
 			clientSocket.close(packet255disconnect.message);
 		}

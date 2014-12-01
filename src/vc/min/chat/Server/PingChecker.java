@@ -14,7 +14,7 @@ public class PingChecker extends Thread{
 		while(true){
 			for(ClientSocket client : server.getClients()){
 				if(System.currentTimeMillis() - client.lastTimeRead > 1000L && client.isRunning()){
-					System.out.println("timeout");
+					System.out.println("Client timed out: " + client.getUsername());
 					client.close("timeout reached");
 				}
 			}
