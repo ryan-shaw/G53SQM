@@ -57,8 +57,16 @@ public class ReaderThread extends Thread {
 	}
 
 	private void handlePacket(byte packetID) {
-		Packet packet = this.clientSocket.getPacketHandler().readPacket(packetID);
+		clientSocket.lastTimeRead = System.currentTimeMillis();
+		Packet packet = null;
+		try{
+			System.out.println("PacketID: " + packetID);
+			packet = this.clientSocket.getPacketHandler().readPacket(packetID);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		if(packet == null){
+			System.err.println("bad packet");
 			Packet1Disconnect packet255disconnect = new Packet1Disconnect("malformed packet received");
 			clientSocket.sendPacket(packet255disconnect);
 			return;// Disconnect
@@ -73,7 +81,6 @@ public class ReaderThread extends Thread {
 		case 2:
 			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
 			clientSocket.sendPacket(packet2keepalive);
-			clientSocket.lastTimeRead = System.currentTimeMillis();
 		break;
 		case 1:
 			System.out.println("Client disconnecting...");

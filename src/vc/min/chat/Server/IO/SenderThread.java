@@ -10,11 +10,6 @@ import vc.min.chat.Shared.Packets.Packet;
 public class SenderThread extends Thread {
 	
 	/**
-	 * Packets to send
-	 */
-	private ArrayList<Packet> packets;
-	
-	/**
 	 * The client socket
 	 */
 	private ClientSocket clientSocket;
@@ -33,14 +28,13 @@ public class SenderThread extends Thread {
 	public SenderThread(ClientSocket clientSocket){
 		this.clientSocket = clientSocket;
 		this.dos = clientSocket.getOutputStream();
-		packets = new ArrayList<Packet>();
 	}
 	
 	@Override
 	public void run(){
 		while(clientSocket.isRunning()){
-			if(packets.size() > 0){
-				Packet packet = packets.remove(0);
+			if(clientSocket.getPacketQueue().size() > 0){
+				Packet packet = clientSocket.getPacketQueue().remove(0);
 				try {
 					clientSocket.getPacketHandler().writePacket(packet);
 				} catch (IOException e) {
@@ -58,9 +52,5 @@ public class SenderThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void queuePacket(Packet packet) {
-		packets.add(packet);
 	}
 }
