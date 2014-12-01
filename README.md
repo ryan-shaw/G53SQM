@@ -6,13 +6,23 @@
 
 ## Chat Protocol
 
-#### PING (keepalive)
-Client must send a keepalive packet every 10 seconds to ensure the connection is still alive, if a keepalive fails to reach the server the server drops the connection.
-
 #### LOGIN <username>
+Packet ID: 0
+
 Login packet
 ```
 Client: username
 
 Server: username
 ```
+
+#### PING (keepalive)
+Packet ID: 2
+
+Client must send a keepalive packet every 10 seconds to ensure the connection is still alive, if a keepalive fails to reach the server the server drops the connection.
+
+
+#### Greeting
+Packet ID: 127
+
+Sent to the client once connected.
