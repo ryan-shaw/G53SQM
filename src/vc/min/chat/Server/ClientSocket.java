@@ -11,6 +11,7 @@ import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.Packet127Greeting;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
+import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 public class ClientSocket{
@@ -128,6 +129,15 @@ public class ClientSocket{
 			e.printStackTrace();
 		}
 		running = false;
+	}
+	
+	public void sendBroadcast(String message) {
+		server.sendBroadcast(message);
+	}
+	
+	public void sendMessage(String message){
+		Packet3Message packet3message = new Packet3Message(message);
+		sendPacket(packet3message);
 	}
 	
 	// Getters and setters, self explanatory

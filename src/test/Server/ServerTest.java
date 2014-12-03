@@ -149,5 +149,5 @@ public class ServerTest {
 		dos.writeByte(10);
 		Thread.sleep(100);
 		assertEquals(1, dis.readByte());
-	}
+	}	
 }
