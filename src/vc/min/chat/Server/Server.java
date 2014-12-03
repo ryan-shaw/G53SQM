@@ -49,8 +49,6 @@ public class Server implements Runnable{
 	 */
 	private ArrayList<ClientSocket> clientSockets;
 	
-	private boolean shuttingDown;
-	
 	private boolean accepting;
 	
 	/**
@@ -74,7 +72,6 @@ public class Server implements Runnable{
 	public void stopServer() throws IOException{
 		System.out.println("Shutting down...");
 		running = false;
-		shuttingDown = true;
 		for(ClientSocket client : clientSockets){
 			client.close("server stopping");
 		}
@@ -131,7 +128,7 @@ public class Server implements Runnable{
 				clientSockets.add(clientThread);
 				System.out.println("Added client, client count: " + clientSockets.size());
 			} catch (IOException e) {
-				if(!shuttingDown)
+				if(running)
 					System.err.println("Failed to accept client: " + e.getMessage());
 			}
 			try {
