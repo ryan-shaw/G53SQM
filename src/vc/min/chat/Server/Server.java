@@ -116,6 +116,16 @@ public class Server implements Runnable{
 		}
 	}
 	
+	void sendBroadcast(String message){
+		ListIterator<ClientSocket> li = clientSockets.listIterator();
+		
+		while(li.hasNext()){
+			ClientSocket client = li.next();
+			if(client.isRunning() && client.getUsername() != null)
+				client.sendMessage(message);
+		}
+	}
+	
 	@Override
 	public void run() {
 		try {

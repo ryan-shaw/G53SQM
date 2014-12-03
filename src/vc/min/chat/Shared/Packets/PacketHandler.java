@@ -18,6 +18,7 @@ public class PacketHandler {
 		packets1.put(0, Packet0Login.class);
 		packets1.put(1, Packet1Disconnect.class);
 		packets1.put(2, Packet2KeepAlive.class);
+		packets1.put(3, Packet3Message.class);
 		packets1.put(127, Packet127Greeting.class);
 		packets = Collections.unmodifiableMap(packets1);
 	}
