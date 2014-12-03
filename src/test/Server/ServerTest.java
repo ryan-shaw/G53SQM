@@ -174,15 +174,21 @@ public class ServerTest {
 		// Expect a confirmation
 		b = ldis.readByte();
 		assertEquals(0, b);
-		assertEquals(ldis.readUTF(), "test1");
+		assertEquals("test1", ldis.readUTF());
 
-		Thread.sleep(100);
-		
 		Packet3Message packet3message = new Packet3Message("test message");
 		p.writePacket(packet3message);
 		b = ldis.readByte();
 		String message = ldis.readUTF();
 		assertEquals(3, b);
 		assertEquals("test message", message);		
+	}
+	
+	@Test
+	public void testPacketOrder() throws IOException{
+		Packet3Message packet3message = new Packet3Message("test message");
+		p.writePacket(packet3message);
+		byte b = dis.readByte();
+		assertEquals(1, b);
 	}
 }
