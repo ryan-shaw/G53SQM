@@ -61,7 +61,7 @@ public class ReaderThread extends Thread {
 	 * @param packetID
 	 */
 	private void handlePacket(byte packetID) {
-		clientSocket.lastTimeRead = System.currentTimeMillis();
+		clientSocket.setLastTimeRead(System.currentTimeMillis());
 		Packet packet = null;
 		try{
 			System.out.println("PacketID: " + packetID);

@@ -18,7 +18,7 @@ import vc.min.chat.Shared.Packets.Packet;
  *
  */
 
-public class Server implements Runnable{
+public class Server extends Thread implements IServer {
 	
 	public static void main(String[] args){
 		new Thread(new Server(0, 4)).start();
@@ -114,7 +114,7 @@ public class Server implements Runnable{
 	/**
 	 * Remove dead sockets
 	 */
-	void removeDead(){
+	public void removeDead(){
 		
 		ListIterator<ClientSocket> li = clientSockets.listIterator();
 		

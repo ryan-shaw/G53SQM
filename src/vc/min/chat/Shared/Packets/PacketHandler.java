@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PacketHandler {
+public class PacketHandler implements IPacketHandler{
 	
 	/**
 	 * Map packet ID to packet classes
@@ -42,11 +42,6 @@ public class PacketHandler {
 		this.dos = dos;
 	}
 	
-	/**
-	 * Write a packet the {@link #dos}
-	 * @param packet
-	 * @throws IOException
-	 */
 	public void writePacket(Packet packet) throws IOException{
 		int packetID = getPacketID(packet.getClass());
 		dos.writeByte(packetID);
@@ -54,16 +49,11 @@ public class PacketHandler {
 		dos.flush();
 	}
 
-	/**
-	 * Read a packet from {@link #dis} 
-	 * @param packetID
-	 * @return packet
-	 */
 	public Packet readPacket(int packetID){
 		try {
 			Class<? extends Packet> packetClass = getPacketClass(packetID);
-			Packet packet = (Packet) packetClass.newInstance();
-			packet = packet.read(dis);
+			Packet packet = (Packet) packetClass.newInstance(); // Initiate new class
+			packet = packet.read(dis); // Run the packets read method
 			return packet;
 		} catch (IOException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
@@ -74,12 +64,6 @@ public class PacketHandler {
 		return null;
 	}
 	
-	/**
-	 * Get a packet ID from a packet class 
-	 * @param packetClass
-	 * @return packetID,
-	 * 		-1 if not found
-	 */
 	public int getPacketID(Class<? extends Packet> packetClass){
 		for(Map.Entry<Integer, Class<? extends Packet>> entry : packets.entrySet()){
 			if(packetClass == entry.getValue())
@@ -88,11 +72,6 @@ public class PacketHandler {
 		return -1;
 	}
 	
-	/**
-	 * Get packet class from packet ID
-	 * @param id
-	 * @return packet class
-	 */
 	public Class<? extends Packet> getPacketClass(int id){
 		return packets.get(id);
 	}

@@ -13,7 +13,7 @@ import vc.min.chat.Shared.Packets.Packet127Greeting;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
-public class ClientSocket{
+public class ClientSocket implements IClientSocket {
 	
 	/**
 	 * Clients user name
@@ -60,7 +60,7 @@ public class ClientSocket{
 	 */
 	private PacketHandler packetHandler;
 	
-	public Long lastTimeRead;
+	private Long lastTimeRead;
 	
 	private ArrayList<Packet> packets;
 	
@@ -161,5 +161,13 @@ public class ClientSocket{
 	
 	public ArrayList<Packet> getPacketQueue(){
 		return packets;
+	}
+	
+	public long getLastTimeRead(){
+		return lastTimeRead;
+	}
+	
+	public void setLastTimeRead(long time){
+		this.lastTimeRead = time;
 	}
 }
