@@ -130,6 +130,9 @@ public class Server implements Runnable{
 				Socket clientSocket = serverSocket.accept();
 				removeDead();
 				ClientSocket clientThread = new ClientSocket(clientSocket, this);
+				if(clientSockets.size() >= maxConnections){
+					clientThread.close("max connections reached");
+				}
 				clientSockets.add(clientThread);
 				System.out.println("Added client, client count: " + clientSockets.size());
 			} catch (IOException e) {
