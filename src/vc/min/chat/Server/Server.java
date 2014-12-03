@@ -48,7 +48,7 @@ public class Server implements Runnable{
 	 * Holds the client sockets
 	 */
 	private ArrayList<ClientSocket> clientSockets;
-	
+
 	private boolean accepting;
 	
 	/**
@@ -62,6 +62,7 @@ public class Server implements Runnable{
 		this.maxConnections = maxConnections;
 		this.running = true;
 		clientSockets = new ArrayList<ClientSocket>();
+		/* Thread to check clients are alive */
 		new PingChecker(this).start();
 	}
 
@@ -93,6 +94,10 @@ public class Server implements Runnable{
 		return serverSocket.getLocalPort();
 	}
 	
+	/**
+	 * Is the server accepting connections
+	 * @return accepting
+	 */
 	public synchronized boolean isAccepting(){
 		return accepting;
 	}

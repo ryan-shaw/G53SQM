@@ -40,7 +40,7 @@ public class ReaderThread extends Thread {
 				packetID = dis.readByte();
 				handlePacket(packetID);
 			} catch (IOException e) {
-				// Stream probably closed
+				// Stream probably closed unexpectedly
 				clientSocket.setRunning(false);
 			}
 			try {
@@ -56,6 +56,10 @@ public class ReaderThread extends Thread {
 		}
 	}
 
+	/**
+	 * Read and then decide what to do with the incoming packet
+	 * @param packetID
+	 */
 	private void handlePacket(byte packetID) {
 		clientSocket.lastTimeRead = System.currentTimeMillis();
 		Packet packet = null;
@@ -63,13 +67,13 @@ public class ReaderThread extends Thread {
 			System.out.println("PacketID: " + packetID);
 			packet = this.clientSocket.getPacketHandler().readPacket(packetID);
 		}catch(Exception e){
-			e.printStackTrace();
+			System.err.println("Exception on handlePacket: " + e.getMessage());
 		}
+		/* If packet it null disconnect client */
 		if(packet == null){
-			System.err.println("bad packet");
 			Packet1Disconnect packet255disconnect = new Packet1Disconnect("malformed packet received");
 			clientSocket.sendPacket(packet255disconnect);
-			return;// Disconnect
+			return;
 		}
 		switch(packetID){
 		case 0:
@@ -77,15 +81,18 @@ public class ReaderThread extends Thread {
 			System.out.println(packet0login.username + " has joined");
 			clientSocket.setUsername(packet0login.username);
 			clientSocket.sendPacket(packet0login);
-		break;
-		case 2:
-			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
-			clientSocket.sendPacket(packet2keepalive);
+			//TODO: Check if someone is already connected with above username
 		break;
 		case 1:
 			System.out.println("Client disconnecting...");
 			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
 			clientSocket.close(packet255disconnect.message);
+		break;
+		case 2:
+			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
+			clientSocket.sendPacket(packet2keepalive);
+		break;
+		
 		}
 	}
 }
