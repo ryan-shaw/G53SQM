@@ -74,6 +74,7 @@ public class ClientSocket{
 		running = true;
 		lastTimeRead = System.currentTimeMillis();
 		packets = new ArrayList<Packet>();
+		/* Send the greeting packet to new client */
 		sendPacket(new Packet127Greeting());
 		initReader();
 		initSender();

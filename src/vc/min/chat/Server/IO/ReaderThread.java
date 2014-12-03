@@ -67,11 +67,10 @@ public class ReaderThread extends Thread {
 			System.out.println("PacketID: " + packetID);
 			packet = this.clientSocket.getPacketHandler().readPacket(packetID);
 		}catch(Exception e){
-			e.printStackTrace();//TODO: Update this 
+			System.err.println("Exception on handlePacket: " + e.getMessage());
 		}
 		/* If packet it null disconnect client */
 		if(packet == null){
-			System.err.println("bad packet");
 			Packet1Disconnect packet255disconnect = new Packet1Disconnect("malformed packet received");
 			clientSocket.sendPacket(packet255disconnect);
 			return;
@@ -82,6 +81,7 @@ public class ReaderThread extends Thread {
 			System.out.println(packet0login.username + " has joined");
 			clientSocket.setUsername(packet0login.username);
 			clientSocket.sendPacket(packet0login);
+			//TODO: Check if someone is already connected with above username
 		break;
 		case 1:
 			System.out.println("Client disconnecting...");
