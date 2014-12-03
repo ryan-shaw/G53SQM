@@ -75,6 +75,11 @@ public class ReaderThread extends Thread {
 			clientSocket.sendPacket(packet255disconnect);
 			return;
 		}
+		// Check packets are able to be used by client.
+		if(clientSocket.getUsername() == null && packetID > 2){
+			clientSocket.close("only login, dc and ping packet available when not logged in");
+			return;
+		}
 		switch(packetID){
 		case 0:
 			Packet0Login packet0login = (Packet0Login) packet;
