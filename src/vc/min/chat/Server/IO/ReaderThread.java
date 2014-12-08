@@ -39,7 +39,13 @@ public class ReaderThread extends Thread {
 			byte packetID;
 			try {
 				packetID = dis.readByte();
-				handlePacket(packetID);
+				Packet packet = clientSocket.getPacketHandler().readPacket(packetID);
+				if(packet == null){
+					clientSocket.close("malformed packet received");
+					return;
+				}else{
+					clientSocket.handlePacket(packet);
+				}
 			} catch (IOException e) {
 				// Stream probably closed unexpectedly
 				clientSocket.setRunning(false);
@@ -54,54 +60,6 @@ public class ReaderThread extends Thread {
 			this.dis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Read and then decide what to do with the incoming packet
-	 * @param packetID
-	 */
-	private void handlePacket(byte packetID) {
-		clientSocket.setLastTimeRead(System.currentTimeMillis());
-		Packet packet = null;
-		try{
-			System.out.println("PacketID: " + packetID);
-			packet = this.clientSocket.getPacketHandler().readPacket(packetID);
-		}catch(Exception e){
-			System.err.println("Exception on handlePacket: " + e.getMessage());
-		}
-		/* If packet it null disconnect client */
-		if(packet == null){
-			Packet1Disconnect packet255disconnect = new Packet1Disconnect("malformed packet received");
-			clientSocket.sendPacket(packet255disconnect);
-			return;
-		}
-		// Check packets are able to be used by client.
-		if(clientSocket.getUsername() == null && packetID > 2){
-			clientSocket.close("only login, dc and ping packet available when not logged in");
-			return;
-		}
-		switch(packetID){
-		case 0:
-			Packet0Login packet0login = (Packet0Login) packet;
-			System.out.println(packet0login.username + " has joined");
-			clientSocket.setUsername(packet0login.username);
-			clientSocket.sendPacket(packet0login);
-			//TODO: Check if someone is already connected with above username
-		break;
-		case 1:
-			System.out.println("Client disconnecting...");
-			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
-			clientSocket.close(packet255disconnect.message);
-		break;
-		case 2:
-			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
-			clientSocket.sendPacket(packet2keepalive);
-		break;
-		case 3:
-			Packet3Message packet3message = (Packet3Message) packet;
-			clientSocket.sendBroadcast(packet3message.message);
-		
 		}
 	}
 }

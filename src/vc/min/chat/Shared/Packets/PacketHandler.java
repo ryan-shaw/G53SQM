@@ -50,7 +50,7 @@ public class PacketHandler implements IPacketHandler{
 		dos.flush();
 	}
 
-	public Packet readPacket(int packetID){
+	public Packet readPacket(int packetID) {
 		try {
 			Class<? extends Packet> packetClass = getPacketClass(packetID);
 			Packet packet = (Packet) packetClass.newInstance(); // Initiate new class

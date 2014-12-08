@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
+import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet127Greeting;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
+import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
@@ -105,6 +107,42 @@ public class ClientSocket implements IClientSocket {
 			st.start();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Read and then decide what to do with the incoming packet
+	 * @param packetID
+	 */
+	public void handlePacket(Packet packet) {
+		setLastTimeRead(System.currentTimeMillis());
+		int packetID = getPacketHandler().getPacketID(packet.getClass());
+		// Check packets are able to be used by client.
+		if(getUsername() == null && packetID > 2){
+			close("only login, dc and ping packet available when not logged in");
+			return;
+		}
+		switch(packetID){
+		case 0:
+			Packet0Login packet0login = (Packet0Login) packet;
+			System.out.println(packet0login.username + " has joined");
+			setUsername(packet0login.username);
+			sendPacket(packet0login);
+			//TODO: Check if someone is already connected with above username
+		break;
+		case 1:
+			System.out.println("Client disconnecting...");
+			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
+			close(packet255disconnect.message);
+		break;
+		case 2:
+			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
+			sendPacket(packet2keepalive);
+		break;
+		case 3:
+			Packet3Message packet3message = (Packet3Message) packet;
+			sendBroadcast(packet3message.message);
+		
 		}
 	}
 	
