@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ListIterator;
-import java.util.Map;
 
-import vc.min.chat.Shared.Packets.Packet0Login;
-import vc.min.chat.Shared.Packets.Packet;
 
 /**
  * Simple chat server based on the protocol listed in README.md
@@ -18,7 +14,7 @@ import vc.min.chat.Shared.Packets.Packet;
  *
  */
 
-public class Server implements Runnable{
+public class Server extends Thread implements IServer {
 	
 	public static void main(String[] args){
 		new Thread(new Server(0, 4)).start();
@@ -66,10 +62,6 @@ public class Server implements Runnable{
 		new PingChecker(this).start();
 	}
 
-	/**
-	 * Stops the server
-	 * @throws IOException
-	 */
 	public void stopServer() throws IOException{
 		System.out.println("Shutting down...");
 		running = false;
@@ -79,25 +71,14 @@ public class Server implements Runnable{
 		serverSocket.close();
 	}
 	
-	/**
-	 * Get client sockets
-	 */
 	public ArrayList<ClientSocket> getClients(){
 		return clientSockets;
 	}
-	
-	/**
-	 * Get the port the server is running on
-	 * @return port
-	 */
+
 	public int getPort() {
 		return serverSocket.getLocalPort();
 	}
 	
-	/**
-	 * Is the server accepting connections
-	 * @return accepting
-	 */
 	public synchronized boolean isAccepting(){
 		return accepting;
 	}
@@ -105,14 +86,26 @@ public class Server implements Runnable{
 	/**
 	 * Remove dead sockets
 	 */
-	void removeDead(){
+	public void removeDead(){
 		
+		ListIterator<ClientSocket> li = clientSockets.listIterator();
+		ArrayList<ClientSocket> remove = new ArrayList<ClientSocket>();
+		while(li.hasNext()){
+			ClientSocket client = li.next();
+			if(!client.isRunning())
+				remove.add(client);
+		}
+		for(ClientSocket c : remove)
+			clientSockets.remove(c);
+	}
+	
+	void sendBroadcast(String message){
 		ListIterator<ClientSocket> li = clientSockets.listIterator();
 		
 		while(li.hasNext()){
 			ClientSocket client = li.next();
-			if(!client.isRunning())
-				clientSockets.remove(client);
+			if(client.isRunning() && client.getUsername() != null)
+				client.sendMessage(message);
 		}
 	}
 	

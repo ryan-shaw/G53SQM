@@ -12,6 +12,7 @@ import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
+import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 import org.junit.After;
@@ -62,8 +63,16 @@ public class ServerTest {
 	@Test
 	public void testMultipleLogins2Sockets() throws InterruptedException, UnknownHostException, IOException{		
 		Socket lclient = new Socket("localhost", server.getPort());
-		DataOutputStream ldos = new DataOutputStream(lclient.getOutputStream());
-		DataInputStream ldis = new DataInputStream(lclient.getInputStream());
+		DataOutputStream ldos;
+		DataInputStream ldis;
+		try{
+			ldos = new DataOutputStream(lclient.getOutputStream());
+			ldis = new DataInputStream(lclient.getInputStream());
+		}catch(Exception e){
+			e.printStackTrace();
+			lclient.close();
+			return;
+		}
 		PacketHandler lp = new PacketHandler(ldis, ldos);
 		
 		byte b = ldis.readByte();
@@ -151,6 +160,55 @@ public class ServerTest {
 		assertEquals(1, dis.readByte());
 	}
 	
+	public void testMessages() throws InterruptedException, UnknownHostException, IOException{		
+		Socket lclient = new Socket("localhost", server.getPort());
+		DataOutputStream ldos;
+		DataInputStream ldis;
+		try{
+			ldos = new DataOutputStream(lclient.getOutputStream());
+			ldis = new DataInputStream(lclient.getInputStream());
+		}catch(IOException e){
+			e.printStackTrace();
+			lclient.close();
+			return;
+		}
+		PacketHandler lp = new PacketHandler(ldis, ldos);
+		
+		byte b = ldis.readByte();
+		assertEquals(127, b);
+		
+		Packet0Login packet = new Packet0Login("test");
+		p.writePacket(packet);
+		// Expect a confirmation
+		b = dis.readByte();
+		assertEquals(0, b);
+		assertEquals("test", dis.readUTF());
+		
+		Packet0Login lpacket = new Packet0Login("test1");
+		lp.writePacket(lpacket);
+		// Expect a confirmation
+		b = ldis.readByte();
+		assertEquals(0, b);
+		assertEquals("test1", ldis.readUTF());
+
+		Packet3Message packet3message = new Packet3Message("test message");
+		p.writePacket(packet3message);
+		b = ldis.readByte();
+		String message = ldis.readUTF();
+		assertEquals(3, b);
+		assertEquals("test message", message);
+		
+		lclient.close();
+	}
+	
+	@Test
+	public void testPacketOrder() throws IOException{
+		Packet3Message packet3message = new Packet3Message("test message");
+		p.writePacket(packet3message);
+		byte b = dis.readByte();
+		assertEquals(1, b);
+	}
+	
 	@Test
 	public void testConnectionLimit() throws UnknownHostException, IOException, InterruptedException{
 		// Connection limit for test server is 2
@@ -194,4 +252,5 @@ public class ServerTest {
 		lclient1.close();
 		lclient2.close();
 	}
+	
 }

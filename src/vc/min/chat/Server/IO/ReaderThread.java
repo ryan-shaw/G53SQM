@@ -8,6 +8,7 @@ import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
+import vc.min.chat.Shared.Packets.Packet3Message;
 
 public class ReaderThread extends Thread {
 	
@@ -61,7 +62,7 @@ public class ReaderThread extends Thread {
 	 * @param packetID
 	 */
 	private void handlePacket(byte packetID) {
-		clientSocket.lastTimeRead = System.currentTimeMillis();
+		clientSocket.setLastTimeRead(System.currentTimeMillis());
 		Packet packet = null;
 		try{
 			System.out.println("PacketID: " + packetID);
@@ -73,6 +74,11 @@ public class ReaderThread extends Thread {
 		if(packet == null){
 			Packet1Disconnect packet255disconnect = new Packet1Disconnect("malformed packet received");
 			clientSocket.sendPacket(packet255disconnect);
+			return;
+		}
+		// Check packets are able to be used by client.
+		if(clientSocket.getUsername() == null && packetID > 2){
+			clientSocket.close("only login, dc and ping packet available when not logged in");
 			return;
 		}
 		switch(packetID){
@@ -92,6 +98,9 @@ public class ReaderThread extends Thread {
 			Packet2KeepAlive packet2keepalive = (Packet2KeepAlive) packet;
 			clientSocket.sendPacket(packet2keepalive);
 		break;
+		case 3:
+			Packet3Message packet3message = (Packet3Message) packet;
+			clientSocket.sendBroadcast(packet3message.message);
 		
 		}
 	}
