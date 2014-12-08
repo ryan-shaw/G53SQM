@@ -63,8 +63,16 @@ public class ServerTest {
 	@Test
 	public void testMultipleLogins2Sockets() throws InterruptedException, UnknownHostException, IOException{		
 		Socket lclient = new Socket("localhost", server.getPort());
-		DataOutputStream ldos = new DataOutputStream(lclient.getOutputStream());
-		DataInputStream ldis = new DataInputStream(lclient.getInputStream());
+		DataOutputStream ldos;
+		DataInputStream ldis;
+		try{
+			ldos = new DataOutputStream(lclient.getOutputStream());
+			ldis = new DataInputStream(lclient.getInputStream());
+		}catch(Exception e){
+			e.printStackTrace();
+			lclient.close();
+			return;
+		}
 		PacketHandler lp = new PacketHandler(ldis, ldos);
 		
 		byte b = ldis.readByte();
