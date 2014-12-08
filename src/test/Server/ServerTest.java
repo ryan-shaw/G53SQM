@@ -160,6 +160,7 @@ public class ServerTest {
 		assertEquals(1, dis.readByte());
 	}
 	
+	@Test
 	public void testMessages() throws InterruptedException, UnknownHostException, IOException{		
 		Socket lclient = new Socket("localhost", server.getPort());
 		DataOutputStream ldos;
