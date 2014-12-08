@@ -155,8 +155,16 @@ public class ServerTest {
 	@Test
 	public void testMessages() throws InterruptedException, UnknownHostException, IOException{		
 		Socket lclient = new Socket("localhost", server.getPort());
-		DataOutputStream ldos = new DataOutputStream(lclient.getOutputStream());
-		DataInputStream ldis = new DataInputStream(lclient.getInputStream());
+		DataOutputStream ldos;
+		DataInputStream ldis;
+		try{
+			ldos = new DataOutputStream(lclient.getOutputStream());
+			ldis = new DataInputStream(lclient.getInputStream());
+		}catch(IOException e){
+			e.printStackTrace();
+			lclient.close();
+			return;
+		}
 		PacketHandler lp = new PacketHandler(ldis, ldos);
 		
 		byte b = ldis.readByte();
@@ -181,7 +189,9 @@ public class ServerTest {
 		b = ldis.readByte();
 		String message = ldis.readUTF();
 		assertEquals(3, b);
-		assertEquals("test message", message);		
+		assertEquals("test message", message);
+		
+		lclient.close();
 	}
 	
 	@Test
