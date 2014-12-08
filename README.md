@@ -6,9 +6,23 @@
        src="https://scan.coverity.com/projects/3643/badge.svg"/>
 </a>
 ## Prerequisites
-## OracleJDK8
+### OracleJDK8
 Built and tested on oracle JDK 8, do not expect this to work on any other JDK
+### Ant
+Ant is used for building and testing
 
+## Build command
+In project root:
+``
+ant build
+``
+
+## Test command
+### Server testing
+In project root:
+``
+ant ServerTest
+``
 ## Tools used
 ### GitHub
 - Subversion
