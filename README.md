@@ -1,7 +1,10 @@
 # Java chat server and client
 ---
 [![Build Status](https://travis-ci.org/ryanshawty/G53SQM.svg?branch=master)](https://travis-ci.org/ryanshawty/G53SQM)
-
+<a href="https://scan.coverity.com/projects/3643">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/3643/badge.svg"/>
+</a>
 ## Prerequisites
 ## OracleJDK8
 Built and tested on oracle JDK 8, do not expect this to work on any other JDK
@@ -18,6 +21,9 @@ Built and tested on oracle JDK 8, do not expect this to work on any other JDK
 	- For unit testing
 - EclEmma
 	- Test coverage
+
+### Coverity
+- Useful for detecting and assigning defects in the build
 
 ## Chat Protocol
 
