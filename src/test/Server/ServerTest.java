@@ -150,4 +150,48 @@ public class ServerTest {
 		Thread.sleep(100);
 		assertEquals(1, dis.readByte());
 	}
+	
+	@Test
+	public void testConnectionLimit() throws UnknownHostException, IOException, InterruptedException{
+		// Connection limit for test server is 2
+		Socket lclient1 = new Socket("localhost", server.getPort());
+		DataOutputStream ldos1;
+		DataInputStream ldis1;
+		try{
+			ldos1 = new DataOutputStream(lclient1.getOutputStream());
+			ldis1 = new DataInputStream(lclient1.getInputStream());
+		}catch(IOException e){
+			e.printStackTrace();
+			lclient1.close();
+			return;
+		}
+		Socket lclient2 = new Socket("localhost", server.getPort());
+		DataOutputStream ldos2;
+		DataInputStream ldis2;
+		try{
+			ldos2 = new DataOutputStream(lclient2.getOutputStream());
+			ldis2 = new DataInputStream(lclient2.getInputStream());
+		}catch(IOException e){
+			e.printStackTrace();
+			lclient1.close();
+			lclient2.close();
+			return;
+		}
+		PacketHandler lp1 = new PacketHandler(ldis1, ldos1);
+		PacketHandler lp2 = new PacketHandler(ldis2, ldos2);
+		
+		Packet0Login packet0login1 = new Packet0Login("test1");
+		Packet0Login packet0login2 = new Packet0Login("test2");
+		assertEquals(127, ldis1.readByte());
+		assertEquals(127, ldis2.readByte());
+		lp1.writePacket(packet0login1);
+		lp2.writePacket(packet0login2);
+		
+		byte b = ldis1.readByte();
+		assertEquals(0, b);
+		b = ldis2.readByte();
+		assertEquals(1, b);
+		lclient1.close();
+		lclient2.close();
+	}
 }
