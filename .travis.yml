@@ -1,3 +1,18 @@
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "Dp8aqRw6oZKja7cnbRpSjXKvRKkEfVpkTzLmem8wjO+LcnJzW+/B5NUhsDfgZ+z56hBXVTY7X7Lks3xwu7sfmWsqabyBlldrxdVFyjeaWkOUH8lW9BEpWeaK995Z314wkUKR1kZ+B4JDKEoPZ/VfMsZCG7A54yX0u68mqdU/8nA="
+addons:
+  coverity_scan:
+    project:
+      name: "ryanshawty/G53SQM"
+      description: "Build submitted via Travis CI"
+    notification_email: ryan.shaw@min.vc
+    build_command_prepend: "ant clean"
+    build_command:   "ant build"
+    branch_pattern: master
+
 language: java
 jdk: oraclejdk8
 branches: 
