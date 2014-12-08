@@ -8,24 +8,33 @@ import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 public interface IClientSocket {
+
+	/**
+	 * Add a packet to the send queue
+	 * @param packet
+	 */
+	public void sendPacket(Packet packet);
 	
-	void sendPacket(Packet packet);
+	/** 
+	 * Close the client connection
+	 * @param message
+	 */
+	public void close(String message);
 	
-	void close(String message);
+	/* Getters and setters */
+	public PacketHandler getPacketHandler();
 	
-	PacketHandler getPacketHandler();
+	public DataOutputStream getOutputStream();
 	
-	DataOutputStream getOutputStream();
+	public DataInputStream getInputStream();
 	
-	DataInputStream getInputStream();
+	public String getUsername();
 	
-	String getUsername();
+	public void setUsername(String username);
 	
-	void setUsername(String username);
+	public boolean isRunning();
 	
-	boolean isRunning();
+	public void setRunning(boolean running);
 	
-	void setRunning(boolean running);
-	
-	ArrayList<Packet> getPacketQueue();
+	public ArrayList<Packet> getPacketQueue();
 }

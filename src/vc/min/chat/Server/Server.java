@@ -74,10 +74,6 @@ public class Server extends Thread implements IServer {
 		new PingChecker(this).start();
 	}
 
-	/**
-	 * Stops the server
-	 * @throws IOException
-	 */
 	public void stopServer() throws IOException{
 		System.out.println("Shutting down...");
 		running = false;
@@ -88,25 +84,14 @@ public class Server extends Thread implements IServer {
 		serverSocket.close();
 	}
 	
-	/**
-	 * Get client sockets
-	 */
 	public ArrayList<ClientSocket> getClients(){
 		return clientSockets;
 	}
-	
-	/**
-	 * Get the port the server is running on
-	 * @return port
-	 */
+
 	public int getPort() {
 		return serverSocket.getLocalPort();
 	}
 	
-	/**
-	 * Is the server accepting connections
-	 * @return accepting
-	 */
 	public synchronized boolean isAccepting(){
 		return accepting;
 	}

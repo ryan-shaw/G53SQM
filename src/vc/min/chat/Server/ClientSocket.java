@@ -114,10 +114,6 @@ public class ClientSocket implements IClientSocket {
 		packets.add(packet);
 	}
 	
-	/** 
-	 * Close the client connection
-	 * @param message
-	 */
 	public void close(String message){
 		Packet1Disconnect packet = new Packet1Disconnect(message);
 		sendPacket(packet);

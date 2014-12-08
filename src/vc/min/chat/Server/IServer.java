@@ -4,13 +4,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public interface IServer {
-	void stopServer() throws IOException;
-	
-	ArrayList<ClientSocket> getClients();
 
-	int getPort();
+	/**
+	 * Stops the server
+	 * @throws IOException
+	 */
+	public void stopServer() throws IOException;
 	
-	boolean isAccepting();
+	/**
+	 * Is the server accepting connections
+	 * @return accepting
+	 */
+	public boolean isAccepting();
 	
-	void removeDead();
+	/**
+	 * Remove dead clients
+	 */
+	public void removeDead();
+	
+	/* Getters and setters */
+	public ArrayList<ClientSocket> getClients();
+
+	public int getPort();
+		
 }
