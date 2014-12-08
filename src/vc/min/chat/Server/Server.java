@@ -18,7 +18,7 @@ import vc.min.chat.Shared.Packets.Packet;
  *
  */
 
-public class Server implements Runnable{
+public class Server extends Thread implements IServer {
 	
 	public static void main(String[] args){
 		new Thread(new Server(0, 4)).start();
@@ -66,10 +66,6 @@ public class Server implements Runnable{
 		new PingChecker(this).start();
 	}
 
-	/**
-	 * Stops the server
-	 * @throws IOException
-	 */
 	public void stopServer() throws IOException{
 		System.out.println("Shutting down...");
 		running = false;
@@ -79,25 +75,14 @@ public class Server implements Runnable{
 		serverSocket.close();
 	}
 	
-	/**
-	 * Get client sockets
-	 */
 	public ArrayList<ClientSocket> getClients(){
 		return clientSockets;
 	}
-	
-	/**
-	 * Get the port the server is running on
-	 * @return port
-	 */
+
 	public int getPort() {
 		return serverSocket.getLocalPort();
 	}
 	
-	/**
-	 * Is the server accepting connections
-	 * @return accepting
-	 */
 	public synchronized boolean isAccepting(){
 		return accepting;
 	}
@@ -105,7 +90,7 @@ public class Server implements Runnable{
 	/**
 	 * Remove dead sockets
 	 */
-	void removeDead(){
+	public void removeDead(){
 		
 		ListIterator<ClientSocket> li = clientSockets.listIterator();
 		
