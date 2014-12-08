@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ListIterator;
-import java.util.Map;
 
-import vc.min.chat.Shared.Packets.Packet0Login;
-import vc.min.chat.Shared.Packets.Packet;
 
 /**
  * Simple chat server based on the protocol listed in README.md
@@ -93,12 +89,14 @@ public class Server extends Thread implements IServer {
 	public void removeDead(){
 		
 		ListIterator<ClientSocket> li = clientSockets.listIterator();
-		
+		ArrayList<ClientSocket> remove = new ArrayList<ClientSocket>();
 		while(li.hasNext()){
 			ClientSocket client = li.next();
 			if(!client.isRunning())
-				clientSockets.remove(client);
+				remove.add(client);
 		}
+		for(ClientSocket c : remove)
+			clientSockets.remove(c);
 	}
 	
 	void sendBroadcast(String message){

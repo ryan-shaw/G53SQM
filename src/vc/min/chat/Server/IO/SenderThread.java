@@ -2,7 +2,6 @@ package vc.min.chat.Server.IO;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import vc.min.chat.Server.ClientSocket;
 import vc.min.chat.Shared.Packets.Packet;
