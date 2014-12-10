@@ -16,11 +16,24 @@ public class Packet4ListClients extends Packet {
 		
 	}
 	
+	/**
+	 * Client -> Server constructor
+	 * @param fullList
+	 * 				Request the full client list
+	 */
 	public Packet4ListClients(boolean fullList){
 		this.fullList = fullList;
 		this.clientSending = true;
 	}
 	
+	/**
+	 * Server -> Client constructor
+	 * @param fullList
+	 * 				If true, full client list
+	 * 				If false, user count only
+	 * @param clients
+	 * 				ArrayList of clients
+	 */
 	public Packet4ListClients(boolean fullList, ArrayList<String> clients){
 		this.fullList = fullList;
 		this.clients = clients;
