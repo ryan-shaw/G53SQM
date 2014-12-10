@@ -12,7 +12,7 @@ public class PacketHandler implements IPacketHandler{
 	/**
 	 * Map packet ID to packet classes
 	 */
-	public static final Map<Integer, Class<? extends Packet>> packets;
+	private static final Map<Integer, Class<? extends Packet>> packets;
 	static{
 		Map<Integer, Class<? extends Packet>> packets1 = new HashMap<Integer, Class<? extends Packet>>();
 		packets1.put(0, Packet0Login.class);
