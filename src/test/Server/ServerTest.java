@@ -7,12 +7,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.Packet3Message;
+import vc.min.chat.Shared.Packets.Packet4ListClients;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 import org.junit.After;
@@ -58,6 +60,15 @@ public class ServerTest {
 			e.printStackTrace();
 		}
 		Thread.sleep(500);
+	}
+	
+	private void login() throws IOException{
+		Packet0Login packetLogin = new Packet0Login("test");
+		p.writePacket(packetLogin);
+		
+		byte b = dis.readByte();
+		assertEquals(0, b);
+		assertEquals("test", dis.readUTF());
 	}
 	
 	@Test
@@ -252,6 +263,33 @@ public class ServerTest {
 		assertEquals(1, b);
 		lclient1.close();
 		lclient2.close();
+	}
+	
+	@Test
+	public void testListClientsCount() throws IOException, InterruptedException{
+		login();
+
+		Packet4ListClients packet = new Packet4ListClients(false);
+		p.writePacket(packet);
+		
+		byte b = dis.readByte();
+		assertEquals(4, b);
+		Packet4ListClients packet4listclients = (Packet4ListClients) p.readPacket(4);
+		assertEquals(1, packet4listclients.count);
+	}
+	
+	@Test
+	public void testListClients() throws IOException{
+		login();
+		
+		Packet4ListClients packet = new Packet4ListClients(true);
+		p.writePacket(packet);
+		
+		byte b = dis.readByte();
+		assertEquals(4, b);
+		Packet4ListClients packet4listclients = (Packet4ListClients) p.readPacket(4);
+		assertEquals(1, packet4listclients.count);
+		assertEquals("test", packet4listclients.clients.get(0));
 	}
 	
 }

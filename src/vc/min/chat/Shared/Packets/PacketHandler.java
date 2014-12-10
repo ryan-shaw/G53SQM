@@ -19,6 +19,7 @@ public class PacketHandler implements IPacketHandler{
 		packets1.put(1, Packet1Disconnect.class);
 		packets1.put(2, Packet2KeepAlive.class);
 		packets1.put(3, Packet3Message.class);
+		packets1.put(4, Packet4ListClients.class);
 		packets1.put(127, Packet127Greeting.class);
 		packets = Collections.unmodifiableMap(packets1);
 	}
@@ -45,7 +46,7 @@ public class PacketHandler implements IPacketHandler{
 	
 	public void writePacket(Packet packet) throws IOException{
 		int packetID = getPacketID(packet.getClass());
-		dos.writeByte(packetID);
+		dos.write(packetID);
 		packet.write(dos);
 		dos.flush();
 	}
