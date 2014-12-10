@@ -14,6 +14,7 @@ import vc.min.chat.Shared.Packets.Packet127Greeting;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.Packet3Message;
+import vc.min.chat.Shared.Packets.Packet4ListClients;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 public class ClientSocket implements IClientSocket {
@@ -142,8 +143,23 @@ public class ClientSocket implements IClientSocket {
 		case 3:
 			Packet3Message packet3message = (Packet3Message) packet;
 			sendBroadcast(packet3message.message);
-		
+		break;
+		case 4:
+			Packet4ListClients packet4listclients = (Packet4ListClients) packet;
+			sendListClients(packet4listclients.fullList);
 		}
+	}
+	
+	private void sendListClients(boolean fullList) {
+		ArrayList<ClientSocket> clients = server.getClients();
+		ArrayList<String> usernames = new ArrayList<String>();
+		for(ClientSocket c : clients){
+			if(c.getUsername() != null){
+				usernames.add(c.getUsername());
+			}
+		}
+		Packet4ListClients packet = new Packet4ListClients(fullList, usernames);
+		sendPacket(packet);
 	}
 	
 	/**

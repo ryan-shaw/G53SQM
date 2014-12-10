@@ -12,13 +12,14 @@ public class PacketHandler implements IPacketHandler{
 	/**
 	 * Map packet ID to packet classes
 	 */
-	public static final Map<Integer, Class<? extends Packet>> packets;
+	private static final Map<Integer, Class<? extends Packet>> packets;
 	static{
 		Map<Integer, Class<? extends Packet>> packets1 = new HashMap<Integer, Class<? extends Packet>>();
 		packets1.put(0, Packet0Login.class);
 		packets1.put(1, Packet1Disconnect.class);
 		packets1.put(2, Packet2KeepAlive.class);
 		packets1.put(3, Packet3Message.class);
+		packets1.put(4, Packet4ListClients.class);
 		packets1.put(127, Packet127Greeting.class);
 		packets = Collections.unmodifiableMap(packets1);
 	}
@@ -45,7 +46,7 @@ public class PacketHandler implements IPacketHandler{
 	
 	public void writePacket(Packet packet) throws IOException{
 		int packetID = getPacketID(packet.getClass());
-		dos.writeByte(packetID);
+		dos.write(packetID);
 		packet.write(dos);
 		dos.flush();
 	}

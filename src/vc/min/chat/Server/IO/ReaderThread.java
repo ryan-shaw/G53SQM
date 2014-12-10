@@ -38,7 +38,7 @@ public class ReaderThread extends Thread {
 		while(clientSocket.isRunning()){
 			byte packetID;
 			try {
-				packetID = dis.readByte();
+				packetID = (byte) dis.read();
 				Packet packet = clientSocket.getPacketHandler().readPacket(packetID);
 				if(packet == null){
 					clientSocket.close("malformed packet received");
