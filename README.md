@@ -61,3 +61,20 @@ Client must send a keepalive packet every 10 seconds to ensure the connection is
 Packet ID: 127
 
 Sent to the client once connected.
+
+## Using the protocol
+There is a shared packets package called Shared.Packets, in this package there is a class called PacketHandler.java, this class will handle everything to do with the packets and it should be used in both server and client, meaning both depend directly on this package and any changes will effect both ends. This method will reduce the amount of bugs because of not updating something on both the client and server packages.
+
+There are 4 public methods + 1 constructor:
+
+```java
+public PacketHandler(DataInputStream, DataOutputStream)
+public void writePacket(Packet) throws IOException
+public Packet readPacket(int /* Packet ID */)
+
+/* Helper methods */
+public int getPacketID(Class<? extends Packet> /* The packet class */)
+public Class<? extend Packet> getPacketClass(int /* Packet ID */)
+```
+
+You can read more into these with the documents attached in IPacketHandler (the interface class)
