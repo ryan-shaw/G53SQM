@@ -18,25 +18,28 @@ public interface IClientSocket {
 	/**
 	 * Add a packet to the send queue
 	 * @param packet
+	 * 		the packet object
 	 */
 	public void sendPacket(Packet packet);
 	
 	/** 
 	 * Close the client connection
 	 * @param message
+	 * 			the message to send to the client
 	 */
 	public void close(String message);
 	
 	/**
 	 * Process the incoming packet (all been read from the stream at this point)
 	 * @param packet
-	 * 				The packet 
+	 * 			the packet object
 	 */
 	public void handlePacket(Packet packet);
 	
 	/**
 	 * Send a message to this client
 	 * @param message
+	 * 			message to send
 	 */
 	public void sendMessage(String message);
 	

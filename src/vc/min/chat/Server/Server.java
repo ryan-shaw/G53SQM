@@ -126,6 +126,11 @@ public class Server extends Thread implements IServer {
 		}
 	}
 	
+	/**
+	 * Send broadcast message to all connected clients
+	 * @param message
+	 * 			message to send
+	 */
 	public void sendBroadcast(String message){
 		ListIterator<IClientSocket> li = clientSockets.listIterator();
 		

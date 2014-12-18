@@ -4,11 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import vc.min.chat.Server.ClientSocket;
-import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet;
-import vc.min.chat.Shared.Packets.Packet1Disconnect;
-import vc.min.chat.Shared.Packets.Packet2KeepAlive;
-import vc.min.chat.Shared.Packets.Packet3Message;
 
 /**
  * Reads incoming packets

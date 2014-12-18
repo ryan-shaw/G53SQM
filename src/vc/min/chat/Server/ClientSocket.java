@@ -120,7 +120,8 @@ public class ClientSocket implements IClientSocket {
 	
 	/**
 	 * Read and then decide what to do with the incoming packet
-	 * @param packetID
+	 * @param Packet
+	 * 		The packet object to process
 	 */
 	public void handlePacket(Packet packet) {
 		setLastTimeRead(System.currentTimeMillis());
@@ -157,6 +158,11 @@ public class ClientSocket implements IClientSocket {
 		}
 	}
 	
+	/**
+	 * Send a the client list to the connected client
+	 * @param fullList
+	 * 			if true send usernames else send client count
+	 */
 	private void sendListClients(boolean fullList) {
 		ArrayList<IClientSocket> clients = server.getClients();
 		ArrayList<String> usernames = new ArrayList<String>();
