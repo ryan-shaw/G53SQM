@@ -3,6 +3,12 @@ package vc.min.chat.Server;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Server interface provides generalised public methods for server management
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public interface IServer {
 
 	/**
@@ -22,8 +28,13 @@ public interface IServer {
 	 */
 	public void removeDead();
 	
+	/**
+	 * Send broadcast message to all connected clients
+	 */
+	public void sendBroadcast(String message);
+	
 	/* Getters and setters */
-	public ArrayList<ClientSocket> getClients();
+	public ArrayList<IClientSocket> getClients();
 
 	public int getPort();
 		

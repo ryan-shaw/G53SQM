@@ -13,7 +13,6 @@ import java.util.ListIterator;
  * @author Ryan Shaw
  *
  */
-
 public class Server extends Thread implements IServer {
 	
 	public static void main(String[] args){
@@ -43,7 +42,7 @@ public class Server extends Thread implements IServer {
 	/**
 	 * Holds the client sockets
 	 */
-	private ArrayList<ClientSocket> clientSockets;
+	private ArrayList<IClientSocket> clientSockets;
 
 	private boolean accepting;
 	
@@ -57,7 +56,7 @@ public class Server extends Thread implements IServer {
 		this.port = port;
 		this.maxConnections = maxConnections;
 		this.running = true;
-		clientSockets = new ArrayList<ClientSocket>();
+		clientSockets = new ArrayList<IClientSocket>();
 		/* Thread to check clients are alive */
 		new PingChecker(this).start();
 	}
@@ -65,13 +64,13 @@ public class Server extends Thread implements IServer {
 	public void stopServer() throws IOException{
 		System.out.println("Shutting down...");
 		running = false;
-		for(ClientSocket client : clientSockets){
+		for(IClientSocket client : clientSockets){
 			client.close("server stopping");
 		}
 		serverSocket.close();
 	}
 	
-	public ArrayList<ClientSocket> getClients(){
+	public ArrayList<IClientSocket> getClients(){
 		return clientSockets;
 	}
 
@@ -88,22 +87,24 @@ public class Server extends Thread implements IServer {
 	 */
 	public void removeDead(){
 		
-		ListIterator<ClientSocket> li = clientSockets.listIterator();
-		ArrayList<ClientSocket> remove = new ArrayList<ClientSocket>();
+		ListIterator<IClientSocket> li = clientSockets.listIterator();
+		ArrayList<IClientSocket> remove = new ArrayList<IClientSocket>();
 		while(li.hasNext()){
-			ClientSocket client = li.next();
+			IClientSocket client = li.next();
 			if(!client.isRunning())
 				remove.add(client);
 		}
-		for(ClientSocket c : remove)
+		for(IClientSocket c : remove){
+			c.close("dead");
 			clientSockets.remove(c);
+		}
 	}
 	
-	void sendBroadcast(String message){
-		ListIterator<ClientSocket> li = clientSockets.listIterator();
+	public void sendBroadcast(String message){
+		ListIterator<IClientSocket> li = clientSockets.listIterator();
 		
 		while(li.hasNext()){
-			ClientSocket client = li.next();
+			IClientSocket client = li.next();
 			if(client.isRunning() && client.getUsername() != null)
 				client.sendMessage(message);
 		}
@@ -122,7 +123,7 @@ public class Server extends Thread implements IServer {
 			try {
 				Socket clientSocket = serverSocket.accept();
 				removeDead();
-				ClientSocket clientThread = new ClientSocket(clientSocket, this);
+				IClientSocket clientThread = new ClientSocket(clientSocket, this);
 				if(clientSockets.size() >= maxConnections){
 					clientThread.close("max connections reached");
 				}else{

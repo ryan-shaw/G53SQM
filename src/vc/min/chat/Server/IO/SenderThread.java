@@ -6,6 +6,12 @@ import java.io.IOException;
 import vc.min.chat.Server.ClientSocket;
 import vc.min.chat.Shared.Packets.Packet;
 
+/**
+ * Sends packets to client
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class SenderThread extends Thread {
 	
 	/**

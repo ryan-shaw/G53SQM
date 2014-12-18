@@ -4,6 +4,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+/**
+ * Message packet 
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class Packet3Message extends Packet {
 
 	public String message;

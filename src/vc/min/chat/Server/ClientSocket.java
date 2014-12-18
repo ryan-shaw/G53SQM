@@ -17,6 +17,11 @@ import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.Packet4ListClients;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
+/**
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class ClientSocket implements IClientSocket {
 	
 	/**
@@ -116,6 +121,7 @@ public class ClientSocket implements IClientSocket {
 	 * @param packetID
 	 */
 	public void handlePacket(Packet packet) {
+		System.out.println(packet);
 		setLastTimeRead(System.currentTimeMillis());
 		int packetID = getPacketHandler().getPacketID(packet.getClass());
 		// Check packets are able to be used by client.
@@ -151,9 +157,9 @@ public class ClientSocket implements IClientSocket {
 	}
 	
 	private void sendListClients(boolean fullList) {
-		ArrayList<ClientSocket> clients = server.getClients();
+		ArrayList<IClientSocket> clients = server.getClients();
 		ArrayList<String> usernames = new ArrayList<String>();
-		for(ClientSocket c : clients){
+		for(IClientSocket c : clients){
 			if(c.getUsername() != null){
 				usernames.add(c.getUsername());
 			}
