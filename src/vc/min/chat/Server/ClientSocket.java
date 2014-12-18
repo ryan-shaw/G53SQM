@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import vc.min.chat.Server.Logger.LogLevel;
+import vc.min.chat.Server.Logger.Logger;
 import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
@@ -17,6 +19,11 @@ import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.Packet4ListClients;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
+/**
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class ClientSocket implements IClientSocket {
 	
 	/**
@@ -113,7 +120,8 @@ public class ClientSocket implements IClientSocket {
 	
 	/**
 	 * Read and then decide what to do with the incoming packet
-	 * @param packetID
+	 * @param Packet
+	 * 		The packet object to process
 	 */
 	public void handlePacket(Packet packet) {
 		setLastTimeRead(System.currentTimeMillis());
@@ -126,13 +134,13 @@ public class ClientSocket implements IClientSocket {
 		switch(packetID){
 		case 0:
 			Packet0Login packet0login = (Packet0Login) packet;
-			System.out.println(packet0login.username + " has joined");
+			Logger.log(LogLevel.INFO, packet0login.username + " has joined");
 			setUsername(packet0login.username);
 			sendPacket(packet0login);
 			//TODO: Check if someone is already connected with above username
 		break;
 		case 1:
-			System.out.println("Client disconnecting...");
+			Logger.log(LogLevel.INFO, getUsername() + " is disconnecting");
 			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
 			close(packet255disconnect.message);
 		break;
@@ -150,10 +158,15 @@ public class ClientSocket implements IClientSocket {
 		}
 	}
 	
+	/**
+	 * Send a the client list to the connected client
+	 * @param fullList
+	 * 			if true send usernames else send client count
+	 */
 	private void sendListClients(boolean fullList) {
-		ArrayList<ClientSocket> clients = server.getClients();
+		ArrayList<IClientSocket> clients = server.getClients();
 		ArrayList<String> usernames = new ArrayList<String>();
-		for(ClientSocket c : clients){
+		for(IClientSocket c : clients){
 			if(c.getUsername() != null){
 				usernames.add(c.getUsername());
 			}

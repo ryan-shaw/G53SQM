@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import vc.min.chat.Server.Logger.LogLevel;
+import vc.min.chat.Server.Logger.Logger;
+
 public class PacketHandler implements IPacketHandler{
 	
 	/**
@@ -58,10 +61,10 @@ public class PacketHandler implements IPacketHandler{
 			packet = packet.read(dis); // Run the packets read method
 			return packet;
 		} catch (IOException | InstantiationException | IllegalAccessException e) {
+			Logger.log(LogLevel.ERROR, "Unknown error on packet receive");
 			e.printStackTrace();
-			System.err.println("Unknown error on packet receive");
 		} catch(NullPointerException e){
-			System.err.println("Received malformed packet!");
+			Logger.log(LogLevel.ERROR, "Received malformed packet");
 		}
 		return null;
 	}
