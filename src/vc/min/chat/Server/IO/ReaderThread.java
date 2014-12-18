@@ -10,6 +10,12 @@ import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.Packet3Message;
 
+/**
+ * Reads incoming packets
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class ReaderThread extends Thread {
 	
 	/**

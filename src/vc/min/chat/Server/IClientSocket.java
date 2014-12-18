@@ -7,6 +7,12 @@ import java.util.ArrayList;
 import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
+/**
+ * The interface for the client socket. Manages and processes data between the client and server
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public interface IClientSocket {
 
 	/**
@@ -20,6 +26,19 @@ public interface IClientSocket {
 	 * @param message
 	 */
 	public void close(String message);
+	
+	/**
+	 * Process the incoming packet (all been read from the stream at this point)
+	 * @param packet
+	 * 				The packet 
+	 */
+	public void handlePacket(Packet packet);
+	
+	/**
+	 * Send a message to this client
+	 * @param message
+	 */
+	public void sendMessage(String message);
 	
 	/* Getters and setters */
 	public PacketHandler getPacketHandler();
@@ -37,4 +56,6 @@ public interface IClientSocket {
 	public void setRunning(boolean running);
 	
 	public ArrayList<Packet> getPacketQueue();
+	
+	public long getLastTimeRead();
 }
