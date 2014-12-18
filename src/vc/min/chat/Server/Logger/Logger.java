@@ -21,8 +21,10 @@ public class Logger {
 			break;
 			case DEBUG:
 				write("[DEBUG] " + message, false);
+			break;
 			case ERROR:
 				write("[ERROR] " + message, true);
+			break;
 		}
 	}
 	
