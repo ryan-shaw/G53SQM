@@ -1,10 +1,15 @@
 package vc.min.chat.Server;
 
 import java.io.IOException;
+
+import vc.min.chat.Server.Logger.LogLevel;
+import vc.min.chat.Server.Logger.Logger;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
+
 
 
 /**
@@ -15,8 +20,28 @@ import java.util.ListIterator;
  */
 public class Server extends Thread implements IServer {
 	
+	/** 
+	 * Start program with: java -jar server.jar --port=n --max=n
+	 * Port defaults to 6111
+	 * Max defaults to 20
+	 * @param args
+	 */
 	public static void main(String[] args){
-		new Thread(new Server(0, 4)).start();
+		int port = 6111;
+		int max = 20;
+		if(args.length != 0){
+			for(String c : args){
+				if(c.startsWith("--port=")){
+					String temp = c.substring(7);
+					port = Integer.parseInt(temp);
+				}else if(c.startsWith("--max=")){
+					String temp = c.substring(6);
+					max = Integer.parseInt(temp);
+				}
+			}
+		}
+		new Thread(new Server(port, max)).start();
+		
 	}
 		
 	/**
@@ -53,6 +78,7 @@ public class Server extends Thread implements IServer {
 	 * @param maxConnections
 	 */
 	public Server(int port, int maxConnections){
+		Logger.log(LogLevel.INFO, "Starting server on port " + port + " with max connections of " + maxConnections);
 		this.port = port;
 		this.maxConnections = maxConnections;
 		this.running = true;
@@ -62,7 +88,7 @@ public class Server extends Thread implements IServer {
 	}
 
 	public void stopServer() throws IOException{
-		System.out.println("Shutting down...");
+		Logger.log(LogLevel.INFO, "Shutting down server...");
 		running = false;
 		for(IClientSocket client : clientSockets){
 			client.close("server stopping");
@@ -115,7 +141,7 @@ public class Server extends Thread implements IServer {
 		try {
 			serverSocket = new ServerSocket(this.port);
 		} catch (IOException e) {
-			System.err.println("Failed to start: " + e.getMessage());
+			Logger.log(LogLevel.ERROR, "Failed to start server on port " + this.port);
 			return;
 		}
 		while(running){
@@ -128,11 +154,11 @@ public class Server extends Thread implements IServer {
 					clientThread.close("max connections reached");
 				}else{
 					clientSockets.add(clientThread);
-					System.out.println("Added client, client count: " + clientSockets.size());
+					Logger.log(LogLevel.INFO, "Added client, client count: " + clientSockets.size());
 				}
 			} catch (IOException e) {
 				if(running)
-					System.err.println("Failed to accept client: " + e.getMessage());
+					Logger.log(LogLevel.ERROR, "Failed to accept client: " + e.getMessage());
 			}
 			try {
 				Thread.sleep(50);

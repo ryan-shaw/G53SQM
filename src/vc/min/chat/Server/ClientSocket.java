@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import vc.min.chat.Server.Logger.LogLevel;
+import vc.min.chat.Server.Logger.Logger;
 import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
@@ -121,7 +123,6 @@ public class ClientSocket implements IClientSocket {
 	 * @param packetID
 	 */
 	public void handlePacket(Packet packet) {
-		System.out.println(packet);
 		setLastTimeRead(System.currentTimeMillis());
 		int packetID = getPacketHandler().getPacketID(packet.getClass());
 		// Check packets are able to be used by client.
@@ -132,13 +133,13 @@ public class ClientSocket implements IClientSocket {
 		switch(packetID){
 		case 0:
 			Packet0Login packet0login = (Packet0Login) packet;
-			System.out.println(packet0login.username + " has joined");
+			Logger.log(LogLevel.INFO, packet0login.username + " has joined");
 			setUsername(packet0login.username);
 			sendPacket(packet0login);
 			//TODO: Check if someone is already connected with above username
 		break;
 		case 1:
-			System.out.println("Client disconnecting...");
+			Logger.log(LogLevel.INFO, getUsername() + " is disconnecting");
 			Packet1Disconnect packet255disconnect = (Packet1Disconnect) packet;
 			close(packet255disconnect.message);
 		break;
