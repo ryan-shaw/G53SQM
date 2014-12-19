@@ -292,4 +292,27 @@ public class ServerTest {
 		assertEquals("test", packet4listclients.clients.get(0));
 	}
 	
+	@Test
+	public void testUsernameExists() throws UnknownHostException, IOException{
+		login();
+		Socket lclient1 = new Socket("localhost", server.getPort());
+		DataOutputStream ldos1;
+		DataInputStream ldis1;
+		PacketHandler p1;
+		try{
+			ldos1 = new DataOutputStream(lclient1.getOutputStream());
+			ldis1 = new DataInputStream(lclient1.getInputStream());
+			p1 = new PacketHandler(ldis1, ldos1);
+		}catch(IOException e){
+			e.printStackTrace();
+			lclient1.close();
+			return;
+		}
+		Packet0Login packetLogin = new Packet0Login("test");
+		p1.writePacket(packetLogin);
+		
+		byte b = dis.readByte();
+		assertEquals(1, b);
+	}
+	
 }
