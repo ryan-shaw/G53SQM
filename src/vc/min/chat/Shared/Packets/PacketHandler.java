@@ -23,6 +23,7 @@ public class PacketHandler implements IPacketHandler{
 		packets1.put(2, Packet2KeepAlive.class);
 		packets1.put(3, Packet3Message.class);
 		packets1.put(4, Packet4ListClients.class);
+		packets1.put(5, Packet5PM.class);
 		packets1.put(127, Packet127Greeting.class);
 		packets = Collections.unmodifiableMap(packets1);
 	}
