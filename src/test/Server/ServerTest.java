@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
@@ -313,6 +312,9 @@ public class ServerTest {
 		
 		byte b = dis.readByte();
 		assertEquals(1, b);
+		lclient1.close();
+		ldos1.close();
+		ldis1.close();
 	}
 	
 }
