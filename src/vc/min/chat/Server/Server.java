@@ -174,9 +174,11 @@ public class Server extends Thread implements IServer {
 	}
 
 	public IClientSocket getClientSocketByUsername(String username) {
+		if(username == null) return null;
 		ListIterator<IClientSocket> li = clientSockets.listIterator();
 		while(li.hasNext()){
 			IClientSocket client = li.next();
+			if(client.getUsername() == null) continue;
 			if(client.getUsername().equals(username)){
 				return client;
 			}
