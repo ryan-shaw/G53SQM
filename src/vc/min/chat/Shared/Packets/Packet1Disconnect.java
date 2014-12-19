@@ -4,6 +4,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+/**
+ * Sent on disconnect (2 way)
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class Packet1Disconnect extends Packet {
 
 	public String message;

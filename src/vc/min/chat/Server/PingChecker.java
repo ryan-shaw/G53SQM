@@ -1,5 +1,14 @@
 package vc.min.chat.Server;
 
+import vc.min.chat.Server.Logger.LogLevel;
+import vc.min.chat.Server.Logger.Logger;
+
+/**
+ * Checks the last read time of all connected clients to make sure they are alive
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class PingChecker extends Thread{
 
 	private Server server;
@@ -9,11 +18,12 @@ public class PingChecker extends Thread{
 	}
 	
 	public void run(){
+		Logger.log(LogLevel.INFO, "Ping checker started");
 		while(true){
-			for(ClientSocket client : server.getClients()){
+			for(IClientSocket client : server.getClients()){
 				/* Check if the client has sent something recently */
 				if(System.currentTimeMillis() - client.getLastTimeRead() > 1000L && client.isRunning()){
-					System.out.println("Client timed out: " + client.getUsername());
+					Logger.log(LogLevel.INFO, "Client timed out: " + client.getUsername());
 					client.close("timeout reached");
 				}
 			}

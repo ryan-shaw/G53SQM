@@ -6,6 +6,12 @@ import java.io.IOException;
 import vc.min.chat.Server.ClientSocket;
 import vc.min.chat.Shared.Packets.Packet;
 
+/**
+ * Reads incoming packets
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class ReaderThread extends Thread {
 	
 	/**

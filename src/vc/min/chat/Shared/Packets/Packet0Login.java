@@ -4,6 +4,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+/**
+ * Used to login and set username
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class Packet0Login extends Packet {
 
 	public String username;

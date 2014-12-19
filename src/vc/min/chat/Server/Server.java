@@ -1,10 +1,15 @@
 package vc.min.chat.Server;
 
 import java.io.IOException;
+
+import vc.min.chat.Server.Logger.LogLevel;
+import vc.min.chat.Server.Logger.Logger;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
+
 
 
 /**
@@ -13,11 +18,30 @@ import java.util.ListIterator;
  * @author Ryan Shaw
  *
  */
-
 public class Server extends Thread implements IServer {
 	
+	/** 
+	 * Start program with: java -jar server.jar --port=n --max=n
+	 * Port defaults to 6111
+	 * Max defaults to 20
+	 * @param args
+	 */
 	public static void main(String[] args){
-		new Thread(new Server(0, 4)).start();
+		int port = 6111;
+		int max = 20;
+		if(args.length != 0){
+			for(String c : args){
+				if(c.startsWith("--port=")){
+					String temp = c.substring(7);
+					port = Integer.parseInt(temp);
+				}else if(c.startsWith("--max=")){
+					String temp = c.substring(6);
+					max = Integer.parseInt(temp);
+				}
+			}
+		}
+		new Thread(new Server(port, max)).start();
+		
 	}
 		
 	/**
@@ -43,7 +67,7 @@ public class Server extends Thread implements IServer {
 	/**
 	 * Holds the client sockets
 	 */
-	private ArrayList<ClientSocket> clientSockets;
+	private ArrayList<IClientSocket> clientSockets;
 
 	private boolean accepting;
 	
@@ -54,24 +78,25 @@ public class Server extends Thread implements IServer {
 	 * @param maxConnections
 	 */
 	public Server(int port, int maxConnections){
+		Logger.log(LogLevel.INFO, "Starting server on port " + port + " with max connections of " + maxConnections);
 		this.port = port;
 		this.maxConnections = maxConnections;
 		this.running = true;
-		clientSockets = new ArrayList<ClientSocket>();
+		clientSockets = new ArrayList<IClientSocket>();
 		/* Thread to check clients are alive */
 		new PingChecker(this).start();
 	}
 
 	public void stopServer() throws IOException{
-		System.out.println("Shutting down...");
+		Logger.log(LogLevel.INFO, "Shutting down server...");
 		running = false;
-		for(ClientSocket client : clientSockets){
+		for(IClientSocket client : clientSockets){
 			client.close("server stopping");
 		}
 		serverSocket.close();
 	}
 	
-	public ArrayList<ClientSocket> getClients(){
+	public ArrayList<IClientSocket> getClients(){
 		return clientSockets;
 	}
 
@@ -88,22 +113,29 @@ public class Server extends Thread implements IServer {
 	 */
 	public void removeDead(){
 		
-		ListIterator<ClientSocket> li = clientSockets.listIterator();
-		ArrayList<ClientSocket> remove = new ArrayList<ClientSocket>();
+		ListIterator<IClientSocket> li = clientSockets.listIterator();
+		ArrayList<IClientSocket> remove = new ArrayList<IClientSocket>();
 		while(li.hasNext()){
-			ClientSocket client = li.next();
+			IClientSocket client = li.next();
 			if(!client.isRunning())
 				remove.add(client);
 		}
-		for(ClientSocket c : remove)
+		for(IClientSocket c : remove){
+			c.close("dead");
 			clientSockets.remove(c);
+		}
 	}
 	
-	void sendBroadcast(String message){
-		ListIterator<ClientSocket> li = clientSockets.listIterator();
+	/**
+	 * Send broadcast message to all connected clients
+	 * @param message
+	 * 			message to send
+	 */
+	public void sendBroadcast(String message){
+		ListIterator<IClientSocket> li = clientSockets.listIterator();
 		
 		while(li.hasNext()){
-			ClientSocket client = li.next();
+			IClientSocket client = li.next();
 			if(client.isRunning() && client.getUsername() != null)
 				client.sendMessage(message);
 		}
@@ -114,7 +146,7 @@ public class Server extends Thread implements IServer {
 		try {
 			serverSocket = new ServerSocket(this.port);
 		} catch (IOException e) {
-			System.err.println("Failed to start: " + e.getMessage());
+			Logger.log(LogLevel.ERROR, "Failed to start server on port " + this.port);
 			return;
 		}
 		while(running){
@@ -122,16 +154,16 @@ public class Server extends Thread implements IServer {
 			try {
 				Socket clientSocket = serverSocket.accept();
 				removeDead();
-				ClientSocket clientThread = new ClientSocket(clientSocket, this);
+				IClientSocket clientThread = new ClientSocket(clientSocket, this);
 				if(clientSockets.size() >= maxConnections){
 					clientThread.close("max connections reached");
 				}else{
 					clientSockets.add(clientThread);
-					System.out.println("Added client, client count: " + clientSockets.size());
+					Logger.log(LogLevel.INFO, "Added client, client count: " + clientSockets.size());
 				}
 			} catch (IOException e) {
 				if(running)
-					System.err.println("Failed to accept client: " + e.getMessage());
+					Logger.log(LogLevel.ERROR, "Failed to accept client: " + e.getMessage());
 			}
 			try {
 				Thread.sleep(50);
@@ -141,10 +173,10 @@ public class Server extends Thread implements IServer {
 		}
 	}
 
-	public ClientSocket getClientSocketByUsername(String username) {
-		ListIterator<ClientSocket> li = clientSockets.listIterator();
+	public IClientSocket getClientSocketByUsername(String username) {
+		ListIterator<IClientSocket> li = clientSockets.listIterator();
 		while(li.hasNext()){
-			ClientSocket client = li.next();
+			IClientSocket client = li.next();
 			if(client.getUsername() == username){
 				return client;
 			}

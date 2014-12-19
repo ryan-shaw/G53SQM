@@ -5,6 +5,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * List connects clients
+ * 
+ * @author Ryan Shaw
+ *
+ */
 public class Packet4ListClients extends Packet {
 
 	public boolean fullList;

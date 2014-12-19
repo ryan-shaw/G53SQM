@@ -1,0 +1,6 @@
+test.Server
+vc.min.chat.Client
+vc.min.chat.Server
+vc.min.chat.Server.IO
+vc.min.chat.Server.Logger
+vc.min.chat.Shared.Packets
