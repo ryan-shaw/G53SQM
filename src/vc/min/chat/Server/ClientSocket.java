@@ -127,9 +127,12 @@ public class ClientSocket implements IClientSocket {
 		case 0:
 			Packet0Login packet0login = (Packet0Login) packet;
 			System.out.println(packet0login.username + " has joined");
-			setUsername(packet0login.username);
-			sendPacket(packet0login);
-			//TODO: Check if someone is already connected with above username
+			if(server.getClientSocketByUsername(packet0login.username) == null){
+				setUsername(packet0login.username);
+				sendPacket(packet0login);
+			}else{
+				close("already connected with that username");
+			}			
 		break;
 		case 1:
 			System.out.println("Client disconnecting...");
