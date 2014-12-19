@@ -34,8 +34,10 @@ public interface IServer {
 	 * Send broadcast message to all connected clients
 	 * @param message
 	 * 			message to broadcast to all clients
+	 * @param from
+	 * 			who from
 	 */
-	public void sendBroadcast(String message);
+	public void sendBroadcast(String from, String message);
 	
 	/* Getters and setters */
 	public ArrayList<IClientSocket> getClients();

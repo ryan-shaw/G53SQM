@@ -14,6 +14,7 @@ import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.Packet4ListClients;
+import vc.min.chat.Shared.Packets.Packet5PM;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 import org.junit.After;
@@ -202,7 +203,7 @@ public class ServerTest {
 		assertEquals(0, b);
 		assertEquals("test1", ldis.readUTF());
 
-		Packet3Message packet3message = new Packet3Message("test message");
+		Packet3Message packet3message = new Packet3Message("test message", "test1");
 		p.writePacket(packet3message);
 		b = ldis.readByte();
 		String message = ldis.readUTF();
@@ -214,7 +215,7 @@ public class ServerTest {
 	
 	@Test
 	public void testPacketOrder() throws IOException{
-		Packet3Message packet3message = new Packet3Message("test message");
+		Packet3Message packet3message = new Packet3Message("test message", "test");
 		p.writePacket(packet3message);
 		byte b = dis.readByte();
 		assertEquals(1, b);
@@ -312,6 +313,45 @@ public class ServerTest {
 		
 		byte b = dis.readByte();
 		assertEquals(1, b);
+		lclient1.close();
+		ldos1.close();
+		ldis1.close();
+	}
+	
+	@Test
+	public void testPrivateMessage() throws IOException{
+		login();
+		Socket lclient1 = new Socket("localhost", server.getPort());
+		DataOutputStream ldos1;
+		DataInputStream ldis1;
+		PacketHandler p1;
+		try{
+			ldos1 = new DataOutputStream(lclient1.getOutputStream());
+			ldis1 = new DataInputStream(lclient1.getInputStream());
+			p1 = new PacketHandler(ldis1, ldos1);
+		}catch(IOException e){
+			e.printStackTrace();
+			lclient1.close();
+			return;
+		}
+		
+		assertEquals(127, ldis1.readByte());
+		
+		Packet0Login packetLogin = new Packet0Login("test1");
+		p1.writePacket(packetLogin);
+		
+		Packet0Login packetLoginR = (Packet0Login) p1.readPacket(ldis1.readByte());
+		
+		assertEquals("test1", packetLoginR.username);
+		
+		Packet5PM packet5pm = new Packet5PM("test1", "spoofed", "test message");
+		p.writePacket(packet5pm);
+
+		Packet3Message packet5pmR = (Packet3Message) p1.readPacket(ldis1.readByte());
+
+		assertEquals("test message", packet5pmR.message);
+		assertEquals("test", packet5pmR.from);
+		
 		lclient1.close();
 		ldos1.close();
 		ldis1.close();

@@ -155,7 +155,7 @@ public class ClientSocket implements IClientSocket {
 			break;
 			case 3:
 				Packet3Message packet3message = (Packet3Message) packet;
-				sendBroadcast(packet3message.message);
+				sendBroadcast(this.getUsername(), packet3message.message);
 			break;
 			case 4:
 				Packet4ListClients packet4listclients = (Packet4ListClients) packet;
@@ -163,11 +163,11 @@ public class ClientSocket implements IClientSocket {
 			break;
 			case 5:
 				Packet5PM packet5pm =(Packet5PM) packet;
-				IClientSocket sock = server.getClientSocketByUsername(packet5pm.username);
+				IClientSocket sock = server.getClientSocketByUsername(packet5pm.toUsername);
 				if(sock == null){
-					sendMessage("user not found");
+					sendMessage("SERVER", "user not found");
 				}else{
-					sock.sendMessage(packet5pm.message);
+					sock.sendMessage(this.getUsername(), packet5pm.message);
 				}
 			break;
 		}
@@ -209,12 +209,12 @@ public class ClientSocket implements IClientSocket {
 		running = false;
 	}
 	
-	public void sendBroadcast(String message) {
-		server.sendBroadcast(message);
+	public void sendBroadcast(String from, String message) {
+		server.sendBroadcast(from, message);
 	}
 	
-	public void sendMessage(String message){
-		Packet3Message packet3message = new Packet3Message(message);
+	public void sendMessage(String from, String message){
+		Packet3Message packet3message = new Packet3Message(message, from);
 		sendPacket(packet3message);
 	}
 	

@@ -40,8 +40,10 @@ public interface IClientSocket {
 	 * Send a message to this client
 	 * @param message
 	 * 			message to send
+	 * @param from
+	 * 			who from
 	 */
-	public void sendMessage(String message);
+	public void sendMessage(String from, String message);
 	
 	/* Getters and setters */
 	public PacketHandler getPacketHandler();

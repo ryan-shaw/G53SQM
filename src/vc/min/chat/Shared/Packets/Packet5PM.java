@@ -6,27 +6,31 @@ import java.io.IOException;
 
 public class Packet5PM extends Packet{
 	
-	public String username;
+	public String toUsername;
+	public String fromUsername;
 	public String message;
 	
 	public Packet5PM(){
 		
 	}
 	
-	public Packet5PM(String username, String message){
-		this.username = username;
+	public Packet5PM(String to, String from, String message){
+		this.toUsername = to;
+		this.fromUsername = from;
 		this.message = message;
 	}
 
 	@Override
 	public void write(DataOutputStream dos) throws IOException {
-		dos.writeUTF(username);
+		dos.writeUTF(toUsername);
+		dos.writeUTF(fromUsername);
 		dos.writeUTF(message);
 	}
 
 	@Override
 	public Packet read(DataInputStream dis) throws IOException {
-		username = dis.readUTF();
+		toUsername = dis.readUTF();
+		fromUsername = dis.readUTF();
 		message = dis.readUTF();
 		return this;
 	}
