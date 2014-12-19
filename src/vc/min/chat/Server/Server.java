@@ -131,13 +131,13 @@ public class Server extends Thread implements IServer {
 	 * @param message
 	 * 			message to send
 	 */
-	public void sendBroadcast(String message, String from){
+	public void sendBroadcast(String from, String message){
 		ListIterator<IClientSocket> li = clientSockets.listIterator();
 		
 		while(li.hasNext()){
 			IClientSocket client = li.next();
 			if(client.isRunning() && client.getUsername() != null)
-				client.sendMessage(message, from);
+				client.sendMessage(from, message);
 		}
 	}
 	

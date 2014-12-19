@@ -152,10 +152,9 @@ public class ServerTest {
 
 		Packet3Message packet3message = new Packet3Message("test message", "test1");
 		p.writePacket(packet3message);
-		byte b = client1.dis.readByte();
-		String message = client1.dis.readUTF();
-		assertEquals(3, b);
-		assertEquals("test message", message);
+		Packet3Message packet3message1 = (Packet3Message) client1.pHandler.readPacket(client1.dis.readByte());
+		assertEquals("test message", packet3message1.message);
+		assertEquals("test", packet3message1.from);
 		
 		client1.close();
 	}
