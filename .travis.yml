@@ -13,6 +13,7 @@ addons:
     build_command:   "ant build"
     branch_pattern: master
 
+sudo: false
 language: java
 jdk: oraclejdk8
 branches: 
