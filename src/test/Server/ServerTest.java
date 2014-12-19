@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
@@ -288,6 +289,32 @@ public class ServerTest {
 		Packet4ListClients packet4listclients = (Packet4ListClients) p.readPacket(4);
 		assertEquals(1, packet4listclients.count);
 		assertEquals("test", packet4listclients.clients.get(0));
+	}
+	
+	@Test
+	public void testUsernameExists() throws UnknownHostException, IOException{
+		login();
+		Socket lclient1 = new Socket("localhost", server.getPort());
+		DataOutputStream ldos1;
+		DataInputStream ldis1;
+		PacketHandler p1;
+		try{
+			ldos1 = new DataOutputStream(lclient1.getOutputStream());
+			ldis1 = new DataInputStream(lclient1.getInputStream());
+			p1 = new PacketHandler(ldis1, ldos1);
+		}catch(IOException e){
+			e.printStackTrace();
+			lclient1.close();
+			return;
+		}
+		Packet0Login packetLogin = new Packet0Login("test");
+		p1.writePacket(packetLogin);
+		
+		byte b = dis.readByte();
+		assertEquals(1, b);
+		lclient1.close();
+		ldos1.close();
+		ldis1.close();
 	}
 	
 }
