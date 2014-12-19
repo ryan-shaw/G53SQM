@@ -163,7 +163,12 @@ public class ClientSocket implements IClientSocket {
 			break;
 			case 5:
 				Packet5PM packet5pm =(Packet5PM) packet;
-				
+				IClientSocket sock = server.getClientSocketByUsername(packet5pm.username);
+				if(sock == null){
+					sendMessage("user not found");
+				}else{
+					sock.sendMessage(packet5pm.message);
+				}
 			break;
 		}
 	}
