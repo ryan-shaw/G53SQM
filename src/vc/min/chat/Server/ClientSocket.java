@@ -156,6 +156,7 @@ public class ClientSocket implements IClientSocket {
 			case 4:
 				Packet4ListClients packet4listclients = (Packet4ListClients) packet;
 				sendListClients(packet4listclients.fullList);
+			break;
 			case 5:
 				Packet5PM packet5pm =(Packet5PM) packet;
 				
