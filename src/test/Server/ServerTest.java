@@ -10,10 +10,12 @@ import java.net.UnknownHostException;
 
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
+import vc.min.chat.Shared.Packets.Packet127Greeting;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.Packet4ListClients;
+import vc.min.chat.Shared.Packets.Packet5PM;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 import org.junit.After;
@@ -71,37 +73,10 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testMultipleLogins2Sockets() throws InterruptedException, UnknownHostException, IOException{		
-		Socket lclient = new Socket("localhost", server.getPort());
-		DataOutputStream ldos;
-		DataInputStream ldis;
-		try{
-			ldos = new DataOutputStream(lclient.getOutputStream());
-			ldis = new DataInputStream(lclient.getInputStream());
-		}catch(Exception e){
-			e.printStackTrace();
-			lclient.close();
-			return;
-		}
-		PacketHandler lp = new PacketHandler(ldis, ldos);
-		
-		byte b = ldis.readByte();
-		assertEquals(127, b);
-		
-		Packet0Login packet = new Packet0Login("test");
-		p.writePacket(packet);
-		// Expect a confirmation
-		b = dis.readByte();
-		assertEquals(0, b);
-		assertEquals("test", dis.readUTF());
-		
-		Packet0Login lpacket = new Packet0Login("test1");
-		lp.writePacket(lpacket);
-		// Expect a confirmation
-		b = ldis.readByte();
-		assertEquals(0, b);
-		assertEquals(ldis.readUTF(), "test1");
-		lclient.close();
+	public void testMultipleLogins2Sockets() throws InterruptedException, UnknownHostException, IOException{
+		login();
+		TestClient client1 = new TestClient("test1", server.getPort());
+		client1.close();
 	}
 	
 	@Test
@@ -171,50 +146,22 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testMessages() throws InterruptedException, UnknownHostException, IOException{		
-		Socket lclient = new Socket("localhost", server.getPort());
-		DataOutputStream ldos;
-		DataInputStream ldis;
-		try{
-			ldos = new DataOutputStream(lclient.getOutputStream());
-			ldis = new DataInputStream(lclient.getInputStream());
-		}catch(IOException e){
-			e.printStackTrace();
-			lclient.close();
-			return;
-		}
-		PacketHandler lp = new PacketHandler(ldis, ldos);
-		
-		byte b = ldis.readByte();
-		assertEquals(127, b);
-		
-		Packet0Login packet = new Packet0Login("test");
-		p.writePacket(packet);
-		// Expect a confirmation
-		b = dis.readByte();
-		assertEquals(0, b);
-		assertEquals("test", dis.readUTF());
-		
-		Packet0Login lpacket = new Packet0Login("test1");
-		lp.writePacket(lpacket);
-		// Expect a confirmation
-		b = ldis.readByte();
-		assertEquals(0, b);
-		assertEquals("test1", ldis.readUTF());
+	public void testMessages() throws InterruptedException, UnknownHostException, IOException{
+		login();
+		TestClient client1 = new TestClient("test1", server.getPort());
 
-		Packet3Message packet3message = new Packet3Message("test message");
+		Packet3Message packet3message = new Packet3Message("test message", "test1");
 		p.writePacket(packet3message);
-		b = ldis.readByte();
-		String message = ldis.readUTF();
-		assertEquals(3, b);
-		assertEquals("test message", message);
+		Packet3Message packet3message1 = (Packet3Message) client1.pHandler.readPacket(client1.dis.readByte());
+		assertEquals("test message", packet3message1.message);
+		assertEquals("test", packet3message1.from);
 		
-		lclient.close();
+		client1.close();
 	}
 	
 	@Test
 	public void testPacketOrder() throws IOException{
-		Packet3Message packet3message = new Packet3Message("test message");
+		Packet3Message packet3message = new Packet3Message("test message", "test");
 		p.writePacket(packet3message);
 		byte b = dis.readByte();
 		assertEquals(1, b);
@@ -223,45 +170,16 @@ public class ServerTest {
 	@Test
 	public void testConnectionLimit() throws UnknownHostException, IOException, InterruptedException{
 		// Connection limit for test server is 2
-		Socket lclient1 = new Socket("localhost", server.getPort());
-		DataOutputStream ldos1;
-		DataInputStream ldis1;
+		TestClient client1 = new TestClient("test1", server.getPort());
+		TestClient client2;
 		try{
-			ldos1 = new DataOutputStream(lclient1.getOutputStream());
-			ldis1 = new DataInputStream(lclient1.getInputStream());
-		}catch(IOException e){
-			e.printStackTrace();
-			lclient1.close();
-			return;
+			client2 = new TestClient("test2", server.getPort());
+			fail("Didn't throw ClassCastException");
+			client2.close();
+			client1.close();
+		}catch(ClassCastException e){
+			// Success if this is thrown
 		}
-		Socket lclient2 = new Socket("localhost", server.getPort());
-		DataOutputStream ldos2;
-		DataInputStream ldis2;
-		try{
-			ldos2 = new DataOutputStream(lclient2.getOutputStream());
-			ldis2 = new DataInputStream(lclient2.getInputStream());
-		}catch(IOException e){
-			e.printStackTrace();
-			lclient1.close();
-			lclient2.close();
-			return;
-		}
-		PacketHandler lp1 = new PacketHandler(ldis1, ldos1);
-		PacketHandler lp2 = new PacketHandler(ldis2, ldos2);
-		
-		Packet0Login packet0login1 = new Packet0Login("test1");
-		Packet0Login packet0login2 = new Packet0Login("test2");
-		assertEquals(127, ldis1.readByte());
-		assertEquals(127, ldis2.readByte());
-		lp1.writePacket(packet0login1);
-		lp2.writePacket(packet0login2);
-		
-		byte b = ldis1.readByte();
-		assertEquals(0, b);
-		b = ldis2.readByte();
-		assertEquals(1, b);
-		lclient1.close();
-		lclient2.close();
 	}
 	
 	@Test
@@ -294,27 +212,65 @@ public class ServerTest {
 	@Test
 	public void testUsernameExists() throws UnknownHostException, IOException{
 		login();
-		Socket lclient1 = new Socket("localhost", server.getPort());
-		DataOutputStream ldos1;
-		DataInputStream ldis1;
-		PacketHandler p1;
-		try{
-			ldos1 = new DataOutputStream(lclient1.getOutputStream());
-			ldis1 = new DataInputStream(lclient1.getInputStream());
-			p1 = new PacketHandler(ldis1, ldos1);
-		}catch(IOException e){
-			e.printStackTrace();
-			lclient1.close();
-			return;
-		}
-		Packet0Login packetLogin = new Packet0Login("test");
-		p1.writePacket(packetLogin);
+		TestClient client1 = new TestClient("test", server.getPort());
 		
-		byte b = dis.readByte();
+		byte b = client1.dis.readByte();
 		assertEquals(1, b);
-		lclient1.close();
-		ldos1.close();
-		ldis1.close();
+		client1.close();
 	}
 	
+	@Test
+	public void testPrivateMessage() throws IOException{
+		login();
+		TestClient client1 = new TestClient("test1", server.getPort());
+		
+		Packet5PM packet5pm = new Packet5PM("test1", "spoofed", "test message");
+		p.writePacket(packet5pm);
+
+		Packet3Message packet5pmR = (Packet3Message) client1.pHandler.readPacket(client1.dis.readByte());
+
+		assertEquals("test message", packet5pmR.message);
+		assertEquals("test", packet5pmR.from);
+		
+		client1.close();
+	}
+	
+}
+
+class TestClient{
+	public DataOutputStream dos;
+	public DataInputStream dis;
+	public PacketHandler pHandler;
+	private Socket client;
+	public TestClient(String username, int port) throws UnknownHostException, IOException{
+		client = new Socket("localhost", port);
+		try{
+			dos = new DataOutputStream(client.getOutputStream());
+			dis = new DataInputStream(client.getInputStream());
+			pHandler = new PacketHandler(dis, dos);
+		}catch(IOException e){
+			e.printStackTrace();
+			client.close();
+			return;
+		}
+		checkGreeting();
+		performLogin(username);
+	}
+	
+	private void checkGreeting() throws IOException{
+		assertEquals(127, dis.readByte());
+	}
+	
+	private void performLogin(String username) throws IOException{
+		Packet0Login packetLogin = new Packet0Login("test1");
+		pHandler.writePacket(packetLogin);
+		Packet0Login returnedPacket = (Packet0Login) pHandler.readPacket(dis.readByte());
+		assertEquals("test1", returnedPacket.username);
+	}
+	
+	public void close() throws IOException{
+		dos.close();
+		dis.close();
+		client.close();
+	}
 }
