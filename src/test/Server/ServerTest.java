@@ -80,9 +80,7 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testMultipleLogins() throws InterruptedException, IOException {
-		Thread.sleep(100);
-		
+	public void testMultipleLogins() throws InterruptedException, IOException {		
 		Packet0Login packet = new Packet0Login("test");
 		p.writePacket(packet);
 		// Expect a confirmation
@@ -128,7 +126,6 @@ public class ServerTest {
 	public void testKeepAlive() throws InterruptedException, IOException{
 		Packet2KeepAlive packet2keepalive = new Packet2KeepAlive();
 		p.writePacket(packet2keepalive);
-		Thread.sleep(100);
 		byte b = dis.readByte();
 		assertEquals(2, b);
 		
@@ -141,7 +138,6 @@ public class ServerTest {
 	@Test
 	public void testMalformedPacket() throws InterruptedException, IOException{
 		dos.writeByte(10);
-		Thread.sleep(100);
 		assertEquals(1, dis.readByte());
 	}
 	
