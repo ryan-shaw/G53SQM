@@ -11,35 +11,33 @@ Built and tested on oracle JDK 8, do not expect this to work on any other JDK
 ### Ant
 Ant is used for building and testing
 
-## Build command
-In project root:
-``
-ant build
-``
 
-## Test command
-### Server testing
-In project root:
-``
-ant ServerTest
-``
+## Instructions for building and testing (in terminal):
+ 1. Clone the repo
+    * ``git clone https://github.com/ryanshawty/G53SQM.git``
+ 2. Install ant
+    * Windows: https://code.google.com/p/winant/
+    * Linux: http://dita-ot.sourceforge.net/doc/ot-userguide13/xhtml/installing/linux_installingant.html
+    * Execute ``ant`` in terminal to verify if install is required, if so, best bet is install via HomeBrew
+ 3. ``cd G53SQM``
+ 4. Test server
+    * ``ant ServerTest`` - This will build and test the server
+
 ## Tools used
-### GitHub
-- Subversion
-
-### Travis
-- Build and test project
-
-### Eclipse
-- Junit
-	- For unit testing
-- EclEmma
-	- Test coverage
-
-### Coverity
-- Useful for detecting and assigning defects in the build
+- GitHub
+	- Source control
+- TravisCI 
+	- Build and test project
+- Eclipse 
+	- JUnit
+		For unit testing
+	- EclEmma
+		- Test coverage
+- Coverity
+	- Useful for detecting and assigning defects in the build
 
 ## Chat Protocol
+This is the chat protocol that is used in the project, it consists of the basic expectations of a chat server.
 
 #### PING (keepalive)
 Packet ID: 2
