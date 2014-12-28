@@ -228,6 +228,13 @@ public class ServerTest {
 		assertEquals("test message", packet5pmR.message);
 		assertEquals("test", packet5pmR.from);
 		
+		packet5pm = new Packet5PM("test2", "test", "test message, should not deliver");
+		p.writePacket(packet5pm);
+		packet5pmR = (Packet3Message) p.readPacket(dis.readByte());
+		
+		assertEquals("user not found", packet5pmR.message);
+		assertEquals("SERVER", packet5pmR.from);
+		
 		client1.close();
 	}
 	
