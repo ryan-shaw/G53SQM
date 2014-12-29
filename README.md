@@ -18,7 +18,7 @@ Ant is used for building and testing
  2. Install ant
     * Windows: https://code.google.com/p/winant/
     * Linux: http://dita-ot.sourceforge.net/doc/ot-userguide13/xhtml/installing/linux_installingant.html
-    * Execute ``ant`` in terminal to verify if install is required, if so, best bet is install via HomeBrew
+    * OSX: Execute ``ant`` in terminal to verify if install is required, if so, best bet is install via HomeBrew
  3. ``cd G53SQM``
  4. Test server
     * ``ant ServerTest`` - This will build and test the server
