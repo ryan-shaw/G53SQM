@@ -5,23 +5,33 @@
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/3643/badge.svg"/>
 </a>
-## Prerequisites
+## Running server
+To run the server with default settings:
+``java -jar Server.java``
+
+There are 2 possible command line parameters:
+
+``--port=1233``: the port for the server to run on (default: 6111)
+
+``--max=20``: the maximum number of client connections (default: 20)
+
+## Instructions for building and testing (in terminal):
+ 1. Check prerequisites below
+ 2. Clone the repo
+    * ``git clone https://github.com/ryanshawty/G53SQM.git``
+ 3. Install ant
+    * Windows: https://code.google.com/p/winant/
+    * Linux: http://dita-ot.sourceforge.net/doc/ot-userguide13/xhtml/installing/linux_installingant.html
+    * OSX: Execute ``ant`` in terminal to verify if install is required, if so, best bet is install via HomeBrew
+ 4. ``cd G53SQM``
+ 5. Test server
+    * ``ant ServerTest`` - This will build and test the server
+
+## Build Prerequisites
 ### OracleJDK8
 Built and tested on oracle JDK 8, do not expect this to work on any other JDK
 ### Ant
 Ant is used for building and testing
-
-
-## Instructions for building and testing (in terminal):
- 1. Clone the repo
-    * ``git clone https://github.com/ryanshawty/G53SQM.git``
- 2. Install ant
-    * Windows: https://code.google.com/p/winant/
-    * Linux: http://dita-ot.sourceforge.net/doc/ot-userguide13/xhtml/installing/linux_installingant.html
-    * OSX: Execute ``ant`` in terminal to verify if install is required, if so, best bet is install via HomeBrew
- 3. ``cd G53SQM``
- 4. Test server
-    * ``ant ServerTest`` - This will build and test the server
 
 ## Tools used
 - GitHub
