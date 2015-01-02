@@ -3,7 +3,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="C:/Users/Ryan/Documents/GitHub/G53SQM/lib/jmock-junit4-2.6.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ryan/Documents/GitHub/G53SQM/lib/jmock-2.6.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
