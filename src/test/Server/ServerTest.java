@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -204,13 +205,10 @@ public class ServerTest {
 		assertEquals("test", packet4listclients.clients.get(0));
 	}
 	
-	@Test
+	@Test(expected=ClassCastException.class)
 	public void testUsernameExists() throws UnknownHostException, IOException{
 		login();
 		TestClient client1 = new TestClient("test", server.getPort());
-		
-		byte b = client1.dis.readByte();
-		assertEquals(1, b);
 		client1.close();
 	}
 	
@@ -286,15 +284,9 @@ class TestClient{
 		Packet0Login packetLogin = new Packet0Login(username);
 		pHandler.writePacket(packetLogin);
 		byte b = dis.readByte();
-		if(b == 0){
-			Packet0Login returnedPacket = (Packet0Login) pHandler.readPacket(b);
-			assertEquals(username, returnedPacket.username);
-		}else if(b == 1){
-			Packet1Disconnect dc = (Packet1Disconnect) pHandler.readPacket(b);
-			System.out.println(dc.message);
-		}else{
-			System.out.println(b);
-		}
+		Packet0Login returnedPacket = (Packet0Login) pHandler.readPacket(b);
+		assertEquals(username, returnedPacket.username);
+
 	}
 	
 	public void close() throws IOException{
