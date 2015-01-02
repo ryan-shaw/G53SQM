@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import vc.min.chat.Server.Logger.LogLevel;
 import vc.min.chat.Server.Logger.Logger;
 import vc.min.chat.Server.IO.ReaderThread;
-import vc.min.chat.Server.IO.SenderThread;
 import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet127Greeting;
@@ -46,12 +45,7 @@ public class ClientSocket implements IClientSocket {
 	 * Input thread
 	 */
 	private ReaderThread rt;
-	
-	/**
-	 * Output thread
-	 */
-	private SenderThread st;
-	
+
 	/**
 	 * Main server instance
 	 */
