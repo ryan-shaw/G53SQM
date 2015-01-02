@@ -27,8 +27,9 @@ public interface IServer {
 	
 	/**
 	 * Remove dead clients
+	 * @throws IOException 
 	 */
-	public void removeDead();
+	public void removeDead() throws IOException;
 	
 	/**
 	 * Send broadcast message to all connected clients
