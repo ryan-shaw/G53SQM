@@ -158,7 +158,11 @@ public class Server extends Thread implements IServer {
 			accepting = true;
 			try {
 				Socket clientSocket = serverSocket.accept();
-				removeDead();
+				try{
+					removeDead();
+				}catch(IOException e){
+					Logger.log(LogLevel.ERROR, "error occured on removal of dead sockets");
+				}
 				IClientSocket clientThread = new ClientSocket(clientSocket, this);
 				if(clientSockets.size() >= maxConnections){
 					clientThread.close("max connections reached");
