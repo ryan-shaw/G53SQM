@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 
 import vc.min.chat.Server.Server;
 import vc.min.chat.Shared.Packets.Packet0Login;
-import vc.min.chat.Shared.Packets.Packet127Greeting;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet2KeepAlive;
 import vc.min.chat.Shared.Packets.Packet3Message;
@@ -238,6 +237,25 @@ public class ServerTest {
 		client1.close();
 	}
 	
+	@Test
+	public void messageTransitTime() throws UnknownHostException, IOException, InterruptedException{
+		login();
+		TestClient client2 = new TestClient("test2", server.getPort());
+		long total = 0;
+		for(int i = 0; i < 15; i++){
+			long start = System.nanoTime();
+			p.writePacket(new Packet5PM("test2", "test", "test"));
+			client2.pHandler.readPacket(client2.dis.readByte());
+			long stop = System.nanoTime();
+			if(i != 0)
+			total += stop-start;
+			System.out.println(stop-start);
+			client2.pHandler.writePacket(new Packet2KeepAlive());
+			Thread.sleep(50);
+		}
+		System.out.println("Total: " + total/15);
+	}
+	
 }
 
 class TestClient{
@@ -265,10 +283,18 @@ class TestClient{
 	}
 	
 	private void performLogin(String username) throws IOException{
-		Packet0Login packetLogin = new Packet0Login("test1");
+		Packet0Login packetLogin = new Packet0Login(username);
 		pHandler.writePacket(packetLogin);
-		Packet0Login returnedPacket = (Packet0Login) pHandler.readPacket(dis.readByte());
-		assertEquals("test1", returnedPacket.username);
+		byte b = dis.readByte();
+		if(b == 0){
+			Packet0Login returnedPacket = (Packet0Login) pHandler.readPacket(b);
+			assertEquals(username, returnedPacket.username);
+		}else if(b == 1){
+			Packet1Disconnect dc = (Packet1Disconnect) pHandler.readPacket(b);
+			System.out.println(dc.message);
+		}else{
+			System.out.println(b);
+		}
 	}
 	
 	public void close() throws IOException{
