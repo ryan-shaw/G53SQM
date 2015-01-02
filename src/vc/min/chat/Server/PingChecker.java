@@ -1,5 +1,7 @@
 package vc.min.chat.Server;
 
+import java.io.IOException;
+
 import vc.min.chat.Server.Logger.LogLevel;
 import vc.min.chat.Server.Logger.Logger;
 
@@ -24,7 +26,11 @@ public class PingChecker extends Thread{
 				/* Check if the client has sent something recently */
 				if(System.currentTimeMillis() - client.getLastTimeRead() > 1000L && client.isRunning()){
 					Logger.log(LogLevel.INFO, "Client timed out: " + client.getUsername());
-					client.close("timeout reached");
+					try {
+						client.close("timeout reached");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			try {

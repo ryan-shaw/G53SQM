@@ -79,41 +79,29 @@ public class ClientSocket implements IClientSocket {
 	/**
 	 * Constructor to create the client
 	 * @param socket
+	 * @throws IOException 
 	 */
-	public ClientSocket(Socket socket, Server server){
+	public ClientSocket(Socket socket, Server server) throws IOException{
 		this.socket = socket;
 		this.server = server;
 		running = true;
 		lastTimeRead = System.currentTimeMillis();
 		packets = new ArrayList<Packet>();
 		/* Send the greeting packet to new client */
-		sendPacket(new Packet127Greeting());
-		initReader();
-		initSender();
+		initIO();
 		packetHandler = new PacketHandler(dis, dos);
+		sendPacket(new Packet127Greeting());
 	}
 
 	/**
 	 * Start the packet reader thread
 	 */
-	private void initReader(){
+	private void initIO(){
 		try {
 			dis = new DataInputStream(this.socket.getInputStream());
+			dos = new DataOutputStream(this.socket.getOutputStream());
 			rt = new ReaderThread(this);
 			rt.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Start the packet sender thread
-	 */
-	private void initSender(){
-		try {
-			dos = new DataOutputStream(this.socket.getOutputStream());
-			st = new SenderThread(this);
-			st.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -123,8 +111,9 @@ public class ClientSocket implements IClientSocket {
 	 * Read and then decide what to do with the incoming packet
 	 * @param Packet
 	 * 		The packet object to process
+	 * @throws IOException 
 	 */
-	public void handlePacket(Packet packet) {
+	public void handlePacket(Packet packet) throws IOException {
 		setLastTimeRead(System.currentTimeMillis());
 		int packetID = getPacketHandler().getPacketID(packet.getClass());
 		// Check packets are able to be used by client.
@@ -177,8 +166,9 @@ public class ClientSocket implements IClientSocket {
 	 * Send a the client list to the connected client
 	 * @param fullList
 	 * 			if true send usernames else send client count
+	 * @throws IOException 
 	 */
-	private void sendListClients(boolean fullList) {
+	private void sendListClients(boolean fullList) throws IOException {
 		ArrayList<IClientSocket> clients = server.getClients();
 		ArrayList<String> usernames = new ArrayList<String>();
 		for(IClientSocket c : clients){
@@ -191,14 +181,16 @@ public class ClientSocket implements IClientSocket {
 	}
 	
 	/**
+	 * @throws IOException 
 	 * Add a packet to the send queue
 	 * @param packet
+	 * @throws  
 	 */
-	public void sendPacket(Packet packet){
-		packets.add(packet);
+	public void sendPacket(Packet packet) throws IOException{
+		getPacketHandler().writePacket(packet);
 	}
 	
-	public void close(String message){
+	public void close(String message) throws IOException{
 		Packet1Disconnect packet = new Packet1Disconnect(message);
 		sendPacket(packet);
 		try {
@@ -213,7 +205,7 @@ public class ClientSocket implements IClientSocket {
 		server.sendBroadcast(from, message);
 	}
 	
-	public void sendMessage(String from, String message){
+	public void sendMessage(String from, String message) throws IOException{
 		Packet3Message packet3message = new Packet3Message(message, from);
 		sendPacket(packet3message);
 	}

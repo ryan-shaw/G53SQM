@@ -110,8 +110,9 @@ public class Server extends Thread implements IServer {
 	
 	/**
 	 * Remove dead sockets
+	 * @throws IOException 
 	 */
-	public void removeDead(){
+	public void removeDead() throws IOException{
 		
 		ListIterator<IClientSocket> li = clientSockets.listIterator();
 		ArrayList<IClientSocket> remove = new ArrayList<IClientSocket>();
@@ -137,7 +138,11 @@ public class Server extends Thread implements IServer {
 		while(li.hasNext()){
 			IClientSocket client = li.next();
 			if(client.isRunning() && client.getUsername() != null)
-				client.sendMessage(from, message);
+				try{
+					client.sendMessage(from, message);
+				}catch(IOException e){
+					Logger.log(LogLevel.ERROR, "error sending broadcast message to " + client.getUsername());
+				}
 		}
 	}
 	
