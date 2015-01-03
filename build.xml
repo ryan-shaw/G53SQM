@@ -10,16 +10,24 @@
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
     <path id="JUnit 4.libraryclasspath">
-        <pathelement location="lib/junit.jar"/>
-        <pathelement location="lib/hamcrest.jar"/>
+        <pathelement location="K:/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="K:/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
     </path>
     <path id="Java chat server and client.classpath">
         <pathelement location="bin"/>
         <path refid="JUnit 4.libraryclasspath"/>
-    </path>
-    <path id="run.ServerTest.classpath">
-        <pathelement location="lib/junit.jar"/>
+        <pathelement location="lib/commons-io-2.4.jar"/>
+        <pathelement location="lib/powermock-mockito-1.6.1-full.jar"/>
+        <pathelement location="lib/cglib-nodep-2.2.2.jar"/>
         <pathelement location="lib/hamcrest.jar"/>
+        <pathelement location="lib/javassist-3.18.2-GA.jar"/>
+        <pathelement location="lib/junit.jar"/>
+        <pathelement location="lib/mockito-all-1.10.8.jar"/>
+        <pathelement location="lib/objenesis-2.1.jar"/>
+    </path>
+    <path id="run.Server.classpath">
+        <pathelement location="lib/hamcrest.jar"/>
+        <pathelement location="lib/junit.jar"/>
         <path refid="Java chat server and client.classpath"/>
     </path>
     <target name="init">
@@ -58,17 +66,24 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="Server">
-        <java classname="vc.min.chat.Server.Server" failonerror="true" fork="yes">
+    <target name="Client">
+        <java classname="vc.min.chat.Client.Client" failonerror="true" fork="yes">
             <classpath refid="Java chat server and client.classpath"/>
         </java>
     </target>
-    <target name="ServerTest" depends="build">
+    <target name="Server">
+        <java classname="vc.min.chat.Server.Server" failonerror="true" fork="yes">
+            <arg line="--port=9123 --max=21"/>
+            <classpath refid="run.Server.classpath"/>
+        </java>
+    </target>
+    <target name="ServerTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" haltonfailure="true">
             <formatter type="brief" usefile="false"/>
-            <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
-            <classpath refid="run.ServerTest.classpath"/>
+            <test name="test.Server.UnitTests" todir="${junit.output.dir}"/>
+            <test name="test.Server.IntegrationTests" todir="${junit.output.dir}"/>
+            <classpath refid="Java chat server and client.classpath"/>
         </junit>
     </target>
     <target name="junitreport">
