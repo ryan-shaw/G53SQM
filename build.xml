@@ -30,10 +30,20 @@
         <pathelement location="lib/junit.jar"/>
         <path refid="Java chat server and client.classpath"/>
     </path>
+    <path id="run.ServerTest.classpath">
+        <path refid="Java chat server and client.classpath"/>
+        <pathelement location="test/server"/>
+    </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="test">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
@@ -82,9 +92,9 @@
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" haltonfailure="true">
             <formatter type="brief" usefile="false"/>
-            <test name="server.UnitTests" todir="${junit.output.dir}"/>
             <test name="server.IntegrationTests" todir="${junit.output.dir}"/>
-            <classpath refid="Java chat server and client.classpath"/>
+            <test name="server.UnitTests" todir="${junit.output.dir}"/>
+            <classpath refid="run.ServerTest.classpath"/>
         </junit>
     </target>
     <target name="junitreport">
