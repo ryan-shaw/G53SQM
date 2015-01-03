@@ -21,5 +21,4 @@ branches:
         - master
 script:
     - ant build
-    - ant UnitTests
-    - ant IntegrationTests
+    - ant ServerTest
