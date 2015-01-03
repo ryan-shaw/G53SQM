@@ -49,6 +49,7 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
+            <src path="test"/>
             <classpath refid="Java chat server and client.classpath"/>
         </javac>
     </target>
@@ -81,8 +82,8 @@
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" haltonfailure="true">
             <formatter type="brief" usefile="false"/>
-            <test name="test.Server.UnitTests" todir="${junit.output.dir}"/>
-            <test name="test.Server.IntegrationTests" todir="${junit.output.dir}"/>
+            <test name="server.UnitTests" todir="${junit.output.dir}"/>
+            <test name="server.IntegrationTests" todir="${junit.output.dir}"/>
             <classpath refid="Java chat server and client.classpath"/>
         </junit>
     </target>
