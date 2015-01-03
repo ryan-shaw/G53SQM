@@ -25,7 +25,7 @@ There are 2 possible command line parameters:
     * OSX: Execute ``ant`` in terminal to verify if install is required, if so, best bet is install via HomeBrew
  4. ``cd G53SQM``
  5. Test server
-    * ``ant ServerTest`` - This will build and test the server
+    * ``ant ServerTest`` - This will build and test the server (integration and unit tests)
 
 ## Build Prerequisites
 ### OracleJDK8
@@ -108,5 +108,7 @@ public Packet readPacket(int /* Packet ID */)
 public int getPacketID(Class<? extends Packet> /* The packet class */)
 public Class<? extend Packet> getPacketClass(int /* Packet ID */)
 ```
+
+Before reading a packet you have get the packet descriptor (ID) from the input stream by ``dis.read()`` this will read a byte from the stream which can then be passed into ``readPacket(byte)``
 
 You can read more into these with the documents attached in IPacketHandler (the interface class)
