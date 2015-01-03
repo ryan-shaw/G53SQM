@@ -109,4 +109,6 @@ public int getPacketID(Class<? extends Packet> /* The packet class */)
 public Class<? extend Packet> getPacketClass(int /* Packet ID */)
 ```
 
+Before reading a packet you have get the packet descriptor (ID) from the input stream by ``dis.read()`` this will read a byte from the stream which can then be passed into ``readPacket(byte)``
+
 You can read more into these with the documents attached in IPacketHandler (the interface class)
