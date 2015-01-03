@@ -10,22 +10,40 @@
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
     <path id="JUnit 4.libraryclasspath">
-        <pathelement location="lib/junit.jar"/>
-        <pathelement location="lib/hamcrest.jar"/>
+        <pathelement location="K:/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="K:/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
     </path>
     <path id="Java chat server and client.classpath">
         <pathelement location="bin"/>
         <path refid="JUnit 4.libraryclasspath"/>
+        <pathelement location="lib/commons-io-2.4.jar"/>
+        <pathelement location="lib/powermock-mockito-1.6.1-full.jar"/>
+        <pathelement location="lib/cglib-nodep-2.2.2.jar"/>
+        <pathelement location="lib/hamcrest.jar"/>
+        <pathelement location="lib/javassist-3.18.2-GA.jar"/>
+        <pathelement location="lib/junit.jar"/>
+        <pathelement location="lib/mockito-all-1.10.8.jar"/>
+        <pathelement location="lib/objenesis-2.1.jar"/>
+    </path>
+    <path id="run.Server.classpath">
+        <pathelement location="lib/hamcrest.jar"/>
+        <pathelement location="lib/junit.jar"/>
+        <path refid="Java chat server and client.classpath"/>
     </path>
     <path id="run.ServerTest.classpath">
-        <pathelement location="lib/junit.jar"/>
-        <pathelement location="lib/hamcrest.jar"/>
         <path refid="Java chat server and client.classpath"/>
+        <pathelement location="test/server"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="test">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
@@ -41,6 +59,7 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
+            <src path="test"/>
             <classpath refid="Java chat server and client.classpath"/>
         </javac>
     </target>
@@ -58,16 +77,23 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="Server">
-        <java classname="vc.min.chat.Server.Server" failonerror="true" fork="yes">
+    <target name="Client">
+        <java classname="vc.min.chat.Client.Client" failonerror="true" fork="yes">
             <classpath refid="Java chat server and client.classpath"/>
         </java>
     </target>
-    <target name="ServerTest" depends="build">
+    <target name="Server">
+        <java classname="vc.min.chat.Server.Server" failonerror="true" fork="yes">
+            <arg line="--port=9123 --max=21"/>
+            <classpath refid="run.Server.classpath"/>
+        </java>
+    </target>
+    <target name="ServerTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" haltonfailure="true">
             <formatter type="brief" usefile="false"/>
-            <test name="test.Server.ServerTest" todir="${junit.output.dir}"/>
+            <test name="server.IntegrationTests" todir="${junit.output.dir}"/>
+            <test name="server.UnitTests" todir="${junit.output.dir}"/>
             <classpath refid="run.ServerTest.classpath"/>
         </junit>
     </target>

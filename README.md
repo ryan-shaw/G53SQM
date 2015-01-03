@@ -25,7 +25,7 @@ There are 2 possible command line parameters:
     * OSX: Execute ``ant`` in terminal to verify if install is required, if so, best bet is install via HomeBrew
  4. ``cd G53SQM``
  5. Test server
-    * ``ant ServerTest`` - This will build and test the server
+    * ``ant ServerTest`` - This will build and test the server (integration and unit tests)
 
 ## Build Prerequisites
 ### OracleJDK8

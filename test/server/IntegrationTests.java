@@ -1,4 +1,4 @@
-package test.Server;
+package server;
 
 import static org.junit.Assert.*;
 
@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
-public class ServerTest {
+public class IntegrationTests {
 	private static Server server;
 	private static Socket client;
 	private static DataOutputStream dos;
