@@ -1,4 +1,4 @@
-package vc.min.chat.Server;
+package vc.min.chat.Server.IO;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import vc.min.chat.Server.Server;
 import vc.min.chat.Server.Logger.LogLevel;
 import vc.min.chat.Server.Logger.Logger;
-import vc.min.chat.Server.IO.ReaderThread;
 import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet127Greeting;

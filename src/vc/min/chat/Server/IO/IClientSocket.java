@@ -1,4 +1,4 @@
-package vc.min.chat.Server;
+package vc.min.chat.Server.IO;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

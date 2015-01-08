@@ -3,7 +3,6 @@ package vc.min.chat.Server.IO;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import vc.min.chat.Server.ClientSocket;
 import vc.min.chat.Shared.Packets.Packet;
 
 /**

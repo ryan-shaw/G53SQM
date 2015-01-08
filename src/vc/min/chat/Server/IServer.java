@@ -3,6 +3,8 @@ package vc.min.chat.Server;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import vc.min.chat.Server.IO.IClientSocket;
+
 /**
  * Server interface provides generalised public methods for server management
  * 

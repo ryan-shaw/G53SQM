@@ -2,6 +2,7 @@ package vc.min.chat.Server;
 
 import java.io.IOException;
 
+import vc.min.chat.Server.IO.IClientSocket;
 import vc.min.chat.Server.Logger.LogLevel;
 import vc.min.chat.Server.Logger.Logger;
 
