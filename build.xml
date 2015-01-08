@@ -88,7 +88,7 @@
             <classpath refid="run.Server.classpath"/>
         </java>
     </target>
-    <target name="ServerTest">
+    <target name="ServerTest" depends="build">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" haltonfailure="true">
             <formatter type="brief" usefile="false"/>
