@@ -187,11 +187,6 @@ public class ClientSocket implements IClientSocket {
 	public void close(String message) throws IOException{
 		Packet1Disconnect packet = new Packet1Disconnect(message);
 		sendPacket(packet);
-		try {
-			Thread.sleep(100); // Wait for packet to be sent
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		running = false;
 	}
 	
