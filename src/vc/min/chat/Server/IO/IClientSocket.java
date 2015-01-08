@@ -1,9 +1,7 @@
 package vc.min.chat.Server.IO;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import vc.min.chat.Shared.Packets.Packet;
 import vc.min.chat.Shared.Packets.PacketHandler;
@@ -53,8 +51,6 @@ public interface IClientSocket {
 	/* Getters and setters */
 	public PacketHandler getPacketHandler();
 	
-	public DataOutputStream getOutputStream();
-	
 	public DataInputStream getInputStream();
 	
 	public String getUsername();
@@ -64,8 +60,6 @@ public interface IClientSocket {
 	public boolean isRunning();
 	
 	public void setRunning(boolean running);
-	
-	public ArrayList<Packet> getPacketQueue();
 	
 	public long getLastTimeRead();
 }

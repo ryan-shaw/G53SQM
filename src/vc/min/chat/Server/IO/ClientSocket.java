@@ -68,8 +68,6 @@ public class ClientSocket implements IClientSocket {
 	
 	private Long lastTimeRead;
 	
-	private ArrayList<Packet> packets;
-	
 	/**
 	 * Constructor to create the client
 	 * @param socket
@@ -80,7 +78,6 @@ public class ClientSocket implements IClientSocket {
 		this.server = server;
 		running = true;
 		lastTimeRead = System.currentTimeMillis();
-		packets = new ArrayList<Packet>();
 		/* Send the greeting packet to new client */
 		initIO();
 		packetHandler = new PacketHandler(dis, dos);
@@ -208,11 +205,7 @@ public class ClientSocket implements IClientSocket {
 	public PacketHandler getPacketHandler(){
 		return packetHandler;
 	}
-	
-	public DataOutputStream getOutputStream(){
-		return dos;
-	}
-	
+
 	public DataInputStream getInputStream(){
 		return dis;
 	}
@@ -231,10 +224,6 @@ public class ClientSocket implements IClientSocket {
 
 	public void setRunning(boolean running) {
 		this.running = running;
-	}
-	
-	public ArrayList<Packet> getPacketQueue(){
-		return packets;
 	}
 	
 	public long getLastTimeRead(){
