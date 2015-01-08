@@ -53,13 +53,11 @@ public class IntegrationTests {
 	
 	@After
 	public void tearDown() throws InterruptedException{
-		Thread.sleep(100);
 		try {
 			server.stopServer();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Thread.sleep(500);
 	}
 	
 	private void login() throws IOException{
