@@ -251,6 +251,14 @@ public class IntegrationTests {
 		System.out.println("Total: " + total/15);
 	}
 	
+	@Test
+	public void testClientRemoval() throws IOException, InterruptedException{
+		login();
+		client.close();
+		Thread.sleep(500);
+		TestClient client1 = new TestClient("test1", server.getPort());
+		assertEquals(1, server.getClients().size());
+	}
 }
 
 class TestClient{
