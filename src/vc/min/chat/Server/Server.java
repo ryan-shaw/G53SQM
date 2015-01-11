@@ -124,7 +124,11 @@ public class Server extends Thread implements IServer {
 				remove.add(client);
 		}
 		for(IClientSocket c : remove){
-			c.close("dead");
+			try{
+				c.close("dead");
+			}catch(IOException e){
+				// If already terminated.
+			}
 			clientSockets.remove(c);
 		}
 	}
