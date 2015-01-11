@@ -63,6 +63,7 @@ public class PacketHandler implements IPacketHandler{
 			return packet;
 		} catch(InstantiationException | IllegalAccessException | NullPointerException e){
 			Logger.log(LogLevel.ERROR, "bad packet");
+			e.printStackTrace();
 		} catch(IOException e){
 			Logger.log(LogLevel.INFO, "client has disconnected");
 		}
