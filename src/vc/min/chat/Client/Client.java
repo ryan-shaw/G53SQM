@@ -34,6 +34,7 @@ import vc.min.chat.Shared.Packets.Packet0Login;
 import vc.min.chat.Shared.Packets.Packet1Disconnect;
 import vc.min.chat.Shared.Packets.Packet3Message;
 import vc.min.chat.Shared.Packets.Packet4ListClients;
+import vc.min.chat.Shared.Packets.Packet5PM;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 
@@ -47,20 +48,18 @@ public class Client {
     private JTextArea output;
     private JScrollPane scrollPane;
     private JTextField input;
+    private JTextField inputPM;
     private JButton sendButton;
+    private JButton sendButton2;
+    private JButton sendButton3;
     private JButton listClientsButton;
     private JFrame frame;
     private JComboBox usernames;
     private JDialog aboutDialog;
     
-    private JTextArea output2;
-    private JScrollPane scrollPane2;
     private JTextField input2;
-    private JButton sendButton2;
-    private JButton quitButton2;
-    private JFrame frame2;
-    private JComboBox usernames2;
-    private JDialog aboutDialog2;
+    
+
     
     private DataOutputStream dos;
     private DataInputStream dis;
@@ -80,8 +79,10 @@ public class Client {
         input2 = new JTextField(20);
         sendButton = new JButton("Send");
         sendButton2 = new JButton("Login");
+        sendButton3 = new JButton("Send PM to:");
         listClientsButton = new JButton("List Users");
         usernames = new JComboBox();
+        inputPM = new JTextField(10);
         
     }
     
@@ -98,13 +99,15 @@ public class Client {
         
         // Create the button panel
         JPanel p = new JPanel();
-        p.setLayout(new GridLayout(3,1));
+        p.setLayout(new GridLayout(5,1));
         p.add(sendButton);
         p.add(sendButton2);
         p.add(listClientsButton);
-        p.add(usernames);
+        p.add(sendButton3);
+        p.add(inputPM);
         
         sendButton.setVisible(false);
+        sendButton3.setVisible(false);
         
         // Add the button panel to the center
         frame.add(p, BorderLayout.CENTER);
@@ -132,6 +135,7 @@ public class Client {
         // Attach listener to the appropriate components
         sendButton.addActionListener(new SendHandler());
         sendButton2.addActionListener(new SendUsername());
+        sendButton3.addActionListener(new SendPMHandler());
         listClientsButton.addActionListener(new SendClientsHandler());
         input.addActionListener(new SendHandler());
         input2.addActionListener(new SendUsername());
@@ -204,6 +208,7 @@ public class Client {
             }
             sendButton.setVisible(true);
             sendButton2.setVisible(false);
+            sendButton3.setVisible(true);
             input2.setText("");
         }
     }
@@ -225,7 +230,22 @@ public class Client {
         }
     }
     
-    
+    private class SendPMHandler implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String text = input2.getText();
+            //text = usernames.getSelectedItem() + ": " + text + "\n";
+            Packet4ListClients packet4listclients = new Packet4ListClients(true);
+            
+            try {
+            	packetHandler.writePacket(packet4listclients);
+            } catch(IOException e1) {
+            	System.err.print("Write packet error!");
+            }
+ 
+    	    System.out.println("List Clients");
+            
+        }
+    }
     
     private class CloseHandler extends WindowAdapter {
         public void windowClosing(WindowEvent e) {
@@ -306,7 +326,6 @@ public class Client {
 	                	    //System.out.println("Keep-Alive");
                   			break;
 	                   case 3:
-	                	    
 	                	    Packet3Message packet3 = (Packet3Message) packet;
 	                	    output.append(packet3.from + "\n");
 	                	    output.append(packet3.message + "\n");
@@ -319,12 +338,14 @@ public class Client {
 	                	   	clients = packet1.clients;
 	                	   	
 	                	   	for (int i = 0; i < clients.size(); i++) {
-	                	   		output.append((i+1) + " " + clients.get(0) + "\n");
+	                	   		output.append((i+1) + " " + clients.get(i) + "\n");
 	                	   	}
 	                	   
 	                	    System.out.println("List Clients");
              				break;
 	                   case 5: 
+	                	   
+	                	   	Packet5PM packet5 = (Packet5PM) packet;
 	                	    System.out.println("Personal Message");
                  			break;                 
                    }
