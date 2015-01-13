@@ -61,8 +61,10 @@ public class PacketHandler implements IPacketHandler{
 			Packet packet = (Packet) packetClass.newInstance(); // Initiate new class
 			packet = packet.read(dis); // Run the packets read method
 			return packet;
-		} catch(IOException | InstantiationException | IllegalAccessException | NullPointerException e){
+		} catch(InstantiationException | IllegalAccessException | NullPointerException e){
 			Logger.log(LogLevel.ERROR, "bad packet");
+		} catch(IOException e){
+			Logger.log(LogLevel.INFO, "client has disconnected");
 		}
 		return null;
 	}

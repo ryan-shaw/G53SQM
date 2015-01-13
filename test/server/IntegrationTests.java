@@ -258,6 +258,7 @@ public class IntegrationTests {
 		Thread.sleep(500);
 		TestClient client1 = new TestClient("test1", server.getPort());
 		assertEquals(1, server.getClients().size());
+		client1.close();
 	}
 }
 
