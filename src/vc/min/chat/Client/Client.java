@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,35 +26,65 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.text.StyledDocument;
 
+import vc.min.chat.Server.IO.ClientSocket;
+import vc.min.chat.Shared.Packets.Packet;
+import vc.min.chat.Shared.Packets.Packet0Login;
+import vc.min.chat.Shared.Packets.Packet1Disconnect;
+import vc.min.chat.Shared.Packets.Packet3Message;
+import vc.min.chat.Shared.Packets.Packet4ListClients;
 import vc.min.chat.Shared.Packets.PacketHandler;
 
 
 public class Client {
     
+	static Client c = new Client();
+	
     private Socket connection = null;
     
+    private JLabel text;
     private JTextArea output;
-    private JScrollPane textPane;
+    private JScrollPane scrollPane;
     private JTextField input;
     private JButton sendButton;
-    private JButton quitButton;
+    private JButton listClientsButton;
     private JFrame frame;
     private JComboBox usernames;
     private JDialog aboutDialog;
+    
+    private JTextArea output2;
+    private JScrollPane scrollPane2;
+    private JTextField input2;
+    private JButton sendButton2;
+    private JButton quitButton2;
+    private JFrame frame2;
+    private JComboBox usernames2;
+    private JDialog aboutDialog2;
+    
     private DataOutputStream dos;
     private DataInputStream dis;
+
+	private boolean running;
+
+	private PacketHandler packetHandler;
     
+	private ArrayList<String> clients;
     public Client() {
+    	text = new JLabel();
         output = new JTextArea(10,50);
-        textPane = new JScrollPane(output, 
+        scrollPane = new JScrollPane(output, 
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         input = new JTextField(50);
+        input2 = new JTextField(20);
         sendButton = new JButton("Send");
-        quitButton = new JButton("Quit");
+        sendButton2 = new JButton("Login");
+        listClientsButton = new JButton("List Users");
         usernames = new JComboBox();
+        
     }
+    
     
     public void launchFrame() {
         frame = new JFrame("Chat Room");
@@ -61,18 +92,22 @@ public class Client {
         // Use the Border Layout for the frame
         frame.setLayout(new BorderLayout());
         
-        frame.add(textPane, BorderLayout.WEST);
+        frame.add(scrollPane, BorderLayout.WEST);
         frame.add(input, BorderLayout.SOUTH);
+        frame.add(input2, BorderLayout.SOUTH);
         
         // Create the button panel
-        JPanel p1 = new JPanel();
-        p1.setLayout(new GridLayout(3,1));
-        p1.add(sendButton);
-        p1.add(quitButton);
-        p1.add(usernames);
+        JPanel p = new JPanel();
+        p.setLayout(new GridLayout(3,1));
+        p.add(sendButton);
+        p.add(sendButton2);
+        p.add(listClientsButton);
+        p.add(usernames);
+        
+        sendButton.setVisible(false);
         
         // Add the button panel to the center
-        frame.add(p1, BorderLayout.CENTER);
+        frame.add(p, BorderLayout.CENTER);
         
         // Create menu bar and File menu
         JMenuBar mb = new JMenuBar();
@@ -96,23 +131,23 @@ public class Client {
         
         // Attach listener to the appropriate components
         sendButton.addActionListener(new SendHandler());
+        sendButton2.addActionListener(new SendUsername());
+        listClientsButton.addActionListener(new SendClientsHandler());
         input.addActionListener(new SendHandler());
+        input2.addActionListener(new SendUsername());
         frame.addWindowListener(new CloseHandler());
-        quitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        
         
         frame.pack();
         frame.setVisible(true);
         
         doConnect();
+        
     }
     
     private void doConnect() {
+    	
         // Initialize server IP and port information
-        
         try {
             // Create the connection to the chat server
             connection = new Socket("localhost", 6111);
@@ -120,12 +155,15 @@ public class Client {
             // Prepare the input stream and store it in an instance variable
             dis = new DataInputStream(connection.getInputStream());
             dos = new DataOutputStream(connection.getOutputStream());
-            PacketHandler packetHandler = new PacketHandler(dis, dos);
-            // Launch the reader thread
-            Thread t = new Thread(new RemoteReader());
-            t.start();
+            packetHandler = new PacketHandler(dis, dos);
+            //Packet packet = clientSocket.getPacketHandler().readPacket(packetID);
             
-            Thread kam = new Thread(new KeepAliveManager(packetHandler));
+            
+            // Launch the reader thread
+            Thread t = new Thread(new RemoteReader(dis, packetHandler, this));
+            t.start();
+            setRunning(true);
+            Thread kam = new Thread(new KeepAliveManager(packetHandler, this));
             kam.start();
             
         } catch (Exception e) {
@@ -136,12 +174,58 @@ public class Client {
     
     private class SendHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            String text = input.getText();
-            text = usernames.getSelectedItem() + ": " + text + "\n";
+            String text = input2.getText();
+            //text = usernames.getSelectedItem() + ": " + text + "\n";
+            Packet4ListClients packet = new Packet4ListClients(true);
+           // packetHandler.writePacket(packet);
+
+            Packet3Message packetm = new Packet3Message(text, "Luke");
+            try {
+            	packetHandler.writePacket(packetm);
+            } catch (IOException e1) {
+            	System.err.print("Send hanler message error!");
+            }
             
-            input.setText("");
+            
+            input2.setText("");
         }
     }
+    
+    private class SendUsername implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String text = input2.getText();
+            //text = usernames.getSelectedItem() + ": " + text + "\n";
+            Packet0Login packet0login = new Packet0Login(text);
+            
+            try {
+            	packetHandler.writePacket(packet0login);
+            } catch(IOException e1) {
+            	System.err.print("Write packet error!");
+            }
+            sendButton.setVisible(true);
+            sendButton2.setVisible(false);
+            input2.setText("");
+        }
+    }
+    
+    private class SendClientsHandler implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String text = input2.getText();
+            //text = usernames.getSelectedItem() + ": " + text + "\n";
+            Packet4ListClients packet4listclients = new Packet4ListClients(true);
+            
+            try {
+            	packetHandler.writePacket(packet4listclients);
+            } catch(IOException e1) {
+            	System.err.print("Write packet error!");
+            }
+ 
+    	    System.out.println("List Clients");
+            
+        }
+    }
+    
+    
     
     private class CloseHandler extends WindowAdapter {
         public void windowClosing(WindowEvent e) {
@@ -185,11 +269,65 @@ public class Client {
     }
     
     private class RemoteReader implements Runnable {
+    	
+    	// Packet packet = clientSocket.getPacketHandler().readPacket(packetID);
+    	DataInputStream dis;
+    	PacketHandler packetHandler;
+    	int read;
+    	Client client;
+    	public RemoteReader(DataInputStream dis, PacketHandler packetHandler, Client client) {
+    		this.dis = dis;
+    		this.packetHandler = packetHandler;
+    		this.client = client;
+    	}
+    	
         public void run() {
             try {
-                while ( true ) {
+                while ( client.isRunning()) {
+                   read = dis.read();
+                   Packet packet = this.packetHandler.readPacket(read);
                    
-                 
+                   switch (read) {
+	                   case 0: 
+	                	    //System.out.println("Accepted");
+	                   		break;
+	                   case 127: 
+	                   	    //Packet0Login packet0login = (Packet0Login) packet;
+	                   	    
+	                   	    System.out.println("Greetings");
+	                   		break;
+	                   case 1: 
+	                	    Packet1Disconnect packet1disconnect = (Packet1Disconnect) packet;
+	                	    //System.out.println(packet1disconnect.message);
+	                	    //System.out.println("Disconnect");
+	                	    client.setRunning(false);
+	                   		break;
+	                   case 2: 
+	                	    //System.out.println("Keep-Alive");
+                  			break;
+	                   case 3:
+	                	    
+	                	    Packet3Message packet3 = (Packet3Message) packet;
+	                	    output.append(packet3.from + "\n");
+	                	    output.append(packet3.message + "\n");
+	                	    
+	                	   // System.out.println("Got a message");
+	                	    break;
+	                   case 4: 
+	                	    
+	                	   	Packet4ListClients packet1 = (Packet4ListClients) packet;
+	                	   	clients = packet1.clients;
+	                	   	
+	                	   	for (int i = 0; i < clients.size(); i++) {
+	                	   		output.append((i+1) + " " + clients.get(0) + "\n");
+	                	   	}
+	                	   
+	                	    System.out.println("List Clients");
+             				break;
+	                   case 5: 
+	                	    System.out.println("Personal Message");
+                 			break;                 
+                   }
                 }
             } catch (Exception e) {
                 System.err.println("Error while reading from server.");
@@ -199,7 +337,16 @@ public class Client {
     }
     
     public static void main(String[] args) {
-        Client c = new Client();
+        
         c.launchFrame();
     }
+
+	public void setRunning(boolean b) {
+		this.running = b;
+		
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
 }
