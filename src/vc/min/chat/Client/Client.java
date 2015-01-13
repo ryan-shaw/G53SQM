@@ -54,7 +54,7 @@ public class Client {
     private JButton sendButton3;
     private JButton listClientsButton;
     private JFrame frame;
-    private JComboBox usernames;
+    private String currentName;
     private JDialog aboutDialog;
     
     private JTextField input2;
@@ -81,7 +81,7 @@ public class Client {
         sendButton2 = new JButton("Login");
         sendButton3 = new JButton("Send PM to:");
         listClientsButton = new JButton("List Users");
-        usernames = new JComboBox();
+       
         inputPM = new JTextField(10);
         
     }
@@ -136,6 +136,7 @@ public class Client {
         sendButton.addActionListener(new SendHandler());
         sendButton2.addActionListener(new SendUsername());
         sendButton3.addActionListener(new SendPMHandler());
+        inputPM.addActionListener(new SendPMHandler());
         listClientsButton.addActionListener(new SendClientsHandler());
         input.addActionListener(new SendHandler());
         input2.addActionListener(new SendUsername());
@@ -179,18 +180,14 @@ public class Client {
     private class SendHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String text = input2.getText();
-            //text = usernames.getSelectedItem() + ": " + text + "\n";
-            Packet4ListClients packet = new Packet4ListClients(true);
-           // packetHandler.writePacket(packet);
 
-            Packet3Message packetm = new Packet3Message(text, "Luke");
+            Packet3Message packetm = new Packet3Message(text, "");
             try {
             	packetHandler.writePacket(packetm);
             } catch (IOException e1) {
             	System.err.print("Send hanler message error!");
             }
-            
-            
+
             input2.setText("");
         }
     }
@@ -199,6 +196,7 @@ public class Client {
         public void actionPerformed(ActionEvent e) {
             String text = input2.getText();
             //text = usernames.getSelectedItem() + ": " + text + "\n";
+            currentName = text;
             Packet0Login packet0login = new Packet0Login(text);
             
             try {
@@ -233,16 +231,18 @@ public class Client {
     private class SendPMHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String text = input2.getText();
+            String name = inputPM.getText();
             //text = usernames.getSelectedItem() + ": " + text + "\n";
             Packet4ListClients packet4listclients = new Packet4ListClients(true);
             
+            Packet5PM packet5pm = new Packet5PM(name, currentName, text);
             try {
-            	packetHandler.writePacket(packet4listclients);
+            	packetHandler.writePacket(packet5pm);
             } catch(IOException e1) {
             	System.err.print("Write packet error!");
             }
  
-    	    System.out.println("List Clients");
+    	    //System.out.println("List Clients");
             
         }
     }
@@ -314,7 +314,8 @@ public class Client {
 	                   case 127: 
 	                   	    //Packet0Login packet0login = (Packet0Login) packet;
 	                   	    
-	                   	    System.out.println("Greetings");
+	                   	    //System.out.println("Greetings");
+	                	    output.append("Greetings\n");
 	                   		break;
 	                   case 1: 
 	                	    Packet1Disconnect packet1disconnect = (Packet1Disconnect) packet;
@@ -345,8 +346,9 @@ public class Client {
              				break;
 	                   case 5: 
 	                	   
-	                	   	Packet5PM packet5 = (Packet5PM) packet;
-	                	    System.out.println("Personal Message");
+	                	   	Packet5PM packet5pm = (Packet5PM) packet;
+	                	   	output.append(packet5pm.fromUsername + " -> " + packet5pm.toUsername + "\n" + packet5pm.message + "\n");
+	                	    //System.out.println("Personal Message");
                  			break;                 
                    }
                 }
