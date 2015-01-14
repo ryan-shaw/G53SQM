@@ -13,6 +13,10 @@ public class KeepAliveManager implements Runnable{
 		this.client = client;
 	}
 	
+	public KeepAliveManager() {
+		
+	}
+	
 	@Override
 	public void run(){
 		while(client.isRunning()){

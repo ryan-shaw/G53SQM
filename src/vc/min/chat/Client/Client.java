@@ -233,7 +233,6 @@ public class Client {
             String text = input2.getText();
             String name = inputPM.getText();
             //text = usernames.getSelectedItem() + ": " + text + "\n";
-            Packet4ListClients packet4listclients = new Packet4ListClients(true);
             
             Packet5PM packet5pm = new Packet5PM(name, currentName, text);
             try {
@@ -241,6 +240,9 @@ public class Client {
             } catch(IOException e1) {
             	System.err.print("Write packet error!");
             }
+            
+            input2.setText("");
+            inputPM.setText("");
  
     	    //System.out.println("List Clients");
             
@@ -309,17 +311,18 @@ public class Client {
                    
                    switch (read) {
 	                   case 0: 
-	                	    //System.out.println("Accepted");
+	                	    Packet0Login packet0login = (Packet0Login) packet;
+	                	    output.append("Welcome " + packet0login.username + "\n");
 	                   		break;
 	                   case 127: 
 	                   	    //Packet0Login packet0login = (Packet0Login) packet;
 	                   	    
 	                   	    //System.out.println("Greetings");
-	                	    output.append("Greetings\n");
+	                	    output.append("Greetings, type name and login\n");
 	                   		break;
 	                   case 1: 
 	                	    Packet1Disconnect packet1disconnect = (Packet1Disconnect) packet;
-	                	    //System.out.println(packet1disconnect.message);
+	                	    output.append(packet1disconnect.message);
 	                	    //System.out.println("Disconnect");
 	                	    client.setRunning(false);
 	                   		break;
@@ -347,7 +350,7 @@ public class Client {
 	                   case 5: 
 	                	   
 	                	   	Packet5PM packet5pm = (Packet5PM) packet;
-	                	   	output.append(packet5pm.fromUsername + " -> " + packet5pm.toUsername + "\n" + packet5pm.message + "\n");
+	                	   	//output.append(packet5pm.fromUsername + " -> " + packet5pm.toUsername + "\n" + packet5pm.message + "\n");
 	                	    //System.out.println("Personal Message");
                  			break;                 
                    }
