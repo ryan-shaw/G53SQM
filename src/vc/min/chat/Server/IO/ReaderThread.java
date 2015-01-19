@@ -3,6 +3,8 @@ package vc.min.chat.Server.IO;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import vc.min.chat.Server.Logger.LogLevel;
+import vc.min.chat.Server.Logger.Logger;
 import vc.min.chat.Shared.Packets.Packet;
 
 /**
@@ -40,6 +42,11 @@ public class ReaderThread extends Thread {
 			byte packetID;
 			try {
 				packetID = (byte) dis.read();
+				if(packetID == -1){
+					Logger.log(LogLevel.INFO, clientSocket.getUsername() + ": end of stream");
+					clientSocket.close("End of stream");
+					return;
+				}
 				Packet packet = clientSocket.getPacketHandler().readPacket(packetID);
 				if(packet == null){
 					clientSocket.close("malformed packet received");
