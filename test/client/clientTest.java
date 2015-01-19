@@ -35,8 +35,12 @@ public class clientTest {
 	private static PacketHandler packetHandler;
 	
 	Packet0Login packet0 = new Packet0Login("testUsername");
-	Packet2KeepAlive packet2keepalive = new Packet2KeepAlive();
+	Packet2KeepAlive packet2 = new Packet2KeepAlive();
+	Packet3Message packet3 = new Packet3Message("testUsername", "message");
 	
+    protected void tearDown() {
+   
+    }
 	@Before
 	public void setUp() throws InterruptedException, IOException{
 		
@@ -77,7 +81,7 @@ public class clientTest {
 	@Test
 	public void testKeepAlive() throws IOException{
 		
-		packetHandler.writePacket(packet2keepalive);
+		packetHandler.writePacket(packet2);
 		
 		byte b = dis.readByte();
 		assertEquals(2, b);
@@ -86,6 +90,10 @@ public class clientTest {
 	@Test
 	public void testSendMessage() throws IOException{
 		
+		DataOutputStream dos = Mockito.mock(DataOutputStream.class);
+		packet3.write(dos);
+		Mockito.verify(dos).writeUTF("testUsername");
+		Mockito.verify(dos).writeUTF("message");
 	}
 
 }

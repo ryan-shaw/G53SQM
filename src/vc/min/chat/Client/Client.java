@@ -1,8 +1,6 @@
 package vc.min.chat.Client;
 
 import java.awt.BorderLayout;
-import java.awt.TextArea;
-import java.awt.TextField;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -14,7 +12,6 @@ import java.net.*;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,7 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.text.StyledDocument;
 
 import vc.min.chat.Server.IO.ClientSocket;
 import vc.min.chat.Shared.Packets.Packet;
@@ -44,7 +40,6 @@ public class Client {
 	
     private Socket connection = null;
     
-    private JLabel text;
     private JTextArea output;
     private JScrollPane scrollPane;
     private JTextField input;
@@ -70,7 +65,6 @@ public class Client {
     
 	private ArrayList<String> clients;
     public Client() {
-    	text = new JLabel();
         output = new JTextArea(10,50);
         scrollPane = new JScrollPane(output, 
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
@@ -213,8 +207,6 @@ public class Client {
     
     private class SendClientsHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            String text = input2.getText();
-            //text = usernames.getSelectedItem() + ": " + text + "\n";
             Packet4ListClients packet4listclients = new Packet4ListClients(true);
             
             try {
@@ -292,7 +284,7 @@ public class Client {
     
     private class RemoteReader implements Runnable {
     	
-    	// Packet packet = clientSocket.getPacketHandler().readPacket(packetID);
+    	
     	DataInputStream dis;
     	PacketHandler packetHandler;
     	int read;
@@ -310,47 +302,43 @@ public class Client {
                    Packet packet = this.packetHandler.readPacket(read);
                    
                    switch (read) {
-	                   case 0: 
+	                   case 0: // Login Packet
 	                	    Packet0Login packet0login = (Packet0Login) packet;
 	                	    output.append("Welcome " + packet0login.username + "\n");
 	                   		break;
-	                   case 127: 
+	                   case 127: // Greetings Packet
 	                   	    //Packet0Login packet0login = (Packet0Login) packet;
-	                   	    
 	                   	    //System.out.println("Greetings");
 	                	    output.append("Greetings, type name and login\n");
 	                   		break;
-	                   case 1: 
+	                   case 1: // Disconnect Packet
 	                	    Packet1Disconnect packet1disconnect = (Packet1Disconnect) packet;
 	                	    output.append(packet1disconnect.message);
 	                	    //System.out.println("Disconnect");
 	                	    client.setRunning(false);
 	                   		break;
-	                   case 2: 
-	                	    //System.out.println("Keep-Alive");
+	                   case 2: // Keep-Alive Packet
+	                	    //System.out.println("Keep-Alive Sent");
                   			break;
-	                   case 3:
+	                   case 3: // Message Packet
 	                	    Packet3Message packet3 = (Packet3Message) packet;
-	                	    output.append(packet3.from + "\n");
+	                	    output.append(packet3.from + ": ");
 	                	    output.append(packet3.message + "\n");
 	                	    
 	                	   // System.out.println("Got a message");
 	                	    break;
-	                   case 4: 
-	                	    
-	                	   	Packet4ListClients packet1 = (Packet4ListClients) packet;
+	                   case 4: // ListClients Packet
+	                	    Packet4ListClients packet1 = (Packet4ListClients) packet;
 	                	   	clients = packet1.clients;
 	                	   	
 	                	   	for (int i = 0; i < clients.size(); i++) {
 	                	   		output.append((i+1) + " " + clients.get(i) + "\n");
 	                	   	}
-	                	   
 	                	    System.out.println("List Clients");
              				break;
-	                   case 5: 
-	                	   
+	                   case 5: // Personal Message Packet
 	                	   	Packet5PM packet5pm = (Packet5PM) packet;
-	                	   	//output.append(packet5pm.fromUsername + " -> " + packet5pm.toUsername + "\n" + packet5pm.message + "\n");
+	                	   	output.append(packet5pm.fromUsername + " -> " + packet5pm.toUsername + "\n" + packet5pm.message + "\n");
 	                	    //System.out.println("Personal Message");
                  			break;                 
                    }
